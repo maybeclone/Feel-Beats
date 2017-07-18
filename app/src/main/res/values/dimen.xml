@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <!--item_song_list-->
+    <dimen name="ava_item_songs_list">52dp</dimen>
+    <dimen name="tile_tv_item">16sp</dimen>
+    <dimen name="artist_tv_item">13sp</dimen>
+
+    <!--music player bar-->
+    <dimen name="height_music_player_bar">55dp</dimen>
+</resources>
