@@ -23,6 +23,7 @@ import com.silent.feelbeat.dataloaders.ArtistLoader;
 import com.silent.feelbeat.dataloaders.SongsLoader;
 import com.silent.feelbeat.fragments.AlbumsFragment;
 import com.silent.feelbeat.fragments.ArtistsFragment;
+import com.silent.feelbeat.fragments.PlaylistFragment;
 import com.silent.feelbeat.fragments.SongsFragment;
 import com.silent.feelbeat.models.Artist;
 
@@ -53,17 +54,15 @@ public class MainActivity extends AppCompatActivity {
         list.add(ArtistsFragment.newInstance("Artists"));
         list.add(SongsFragment.newInstance("Songs"));
         list.add(AlbumsFragment.newInstance("Albums"));
+        list.add(PlaylistFragment.newInstance("Playlist"));
 
         tabLayout.setupWithViewPager(viewPager);
         adapter = new TabAdapter(getSupportFragmentManager(), list);
         viewPager.setAdapter(adapter);
-
-        addTab();
-    }
-
-    private void addTab(){
+        viewPager.setCurrentItem(1);
 
     }
+
 
 
 

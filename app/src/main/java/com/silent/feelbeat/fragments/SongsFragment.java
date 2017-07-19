@@ -24,14 +24,14 @@ import com.silent.feelbeat.utils.SilentUtils;
  * Created by silent on 7/17/2017.
  */
 
-public class SongsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class SongsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private final static int LOADER_ID = 0x0001;
 
     private SongListAdapter adapter;
     private ListView songsList;
 
-    public static SongsFragment newInstance(String title){
+    public static SongsFragment newInstance(String title) {
         SongsFragment songsFragment = new SongsFragment();
         Bundle bundle = new Bundle();
         bundle.putString(SilentUtils.TITLE_FRAGMENT, title);

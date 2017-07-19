@@ -48,10 +48,33 @@ public class ArtistAdapter extends CursorAdapter {
     public ArtistAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
         cursor = c;
-        alphabetIndexer = new AlphabetIndexer(c, 1, "%ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-        positionHeader = new TreeMap<>();
-        sectionToOffset = new HashMap<>();
-        int count = super.getCount();
+        if(c == null){
+            positionHeader = null;
+            sectionToOffset = null;
+            usedSection = null;
+            alphabetIndexer = null;
+            return;
+        }
+        countHeader();
+    }
+
+    private void countHeader(){
+        if(alphabetIndexer == null){
+            alphabetIndexer = new AlphabetIndexer(cursor, 1, "%ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        } else {
+            alphabetIndexer.setCursor(cursor);
+        }
+        if(positionHeader == null){
+            positionHeader = new TreeMap<>();
+        } else {
+            positionHeader.clear();
+        }
+        if(sectionToOffset == null){
+            sectionToOffset = new HashMap<>();
+        } else {
+            sectionToOffset.clear();
+        }
+        int count = cursor.getCount();
         int i;
         for(i = count-1; i>=0; i--){
             positionHeader.put(alphabetIndexer.getSectionForPosition(i), i);
@@ -148,10 +171,21 @@ public class ArtistAdapter extends CursorAdapter {
 
     @Override
     public int getCount() {
+        if(cursor == null)
+            return 0;
         if(super.getCount()!=0){
             return super.getCount()+usedSection.length;
         }
         return super.getCount();
+    }
+
+    @Override
+    public Cursor swapCursor(Cursor newCursor) {
+        cursor = newCursor;
+        if(newCursor!=null) {
+            countHeader();
+        }
+        return super.swapCursor(newCursor);
     }
 
     static class ArtistHolder{

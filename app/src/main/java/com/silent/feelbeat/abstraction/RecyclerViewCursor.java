@@ -27,10 +27,10 @@ public abstract class RecyclerViewCursor<VH extends RecyclerView.ViewHolder> ext
         this.mCursor = cursor;
         mDataVaild = (cursor != null);
         mRowIdColum = mDataVaild ? mCursor.getColumnIndex("_id") : -1;
-//        mDataSetObserver = new NotifyingDataSetObserver();
-//        if(mCursor != null){
-//            mCursor.registerDataSetObserver(mDataSetObserver);
-//        }
+        mDataSetObserver = new NotifyingDataSetObserver();
+        if(mCursor != null){
+            mCursor.registerDataSetObserver(mDataSetObserver);
+        }
     }
 
     public Cursor getCursor(){
@@ -84,14 +84,14 @@ public abstract class RecyclerViewCursor<VH extends RecyclerView.ViewHolder> ext
             return null;
         }
         final Cursor oldCursor = mCursor;
-//        if(oldCursor != null && mDataSetObserver != null){
-//            oldCursor.unregisterDataSetObserver(mDataSetObserver);
-//        }
+        if(oldCursor != null && mDataSetObserver != null){
+            oldCursor.unregisterDataSetObserver(mDataSetObserver);
+        }
         mCursor = newCursor;
         if(mCursor != null){
-//            if(mDataSetObserver != null){
-//                mCursor.registerDataSetObserver(mDataSetObserver);
-//            }
+            if(mDataSetObserver != null){
+                mCursor.registerDataSetObserver(mDataSetObserver);
+            }
             mRowIdColum = newCursor.getColumnIndexOrThrow("_id");
             mDataVaild = true;
             notifyDataSetChanged();

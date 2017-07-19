@@ -194,7 +194,9 @@ public class SongListAdapter extends CursorAdapter{
     @Override
     public Cursor swapCursor(Cursor newCursor) {
         cursor = newCursor;
-        countHeader();
+        if(cursor!=null){
+            countHeader();
+        }
         return super.swapCursor(newCursor);
     }
 

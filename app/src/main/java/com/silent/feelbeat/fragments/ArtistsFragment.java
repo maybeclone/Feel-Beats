@@ -42,7 +42,7 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
     public void onAttach(Context context) {
         super.onAttach(context);
         adapter = new ArtistAdapter(context, null, 0);
-//        getLoaderManager().initLoader(LOADER_ID, null, this);
+        getLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
     @Nullable
@@ -55,6 +55,7 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         artistList = (ListView) view.findViewById(R.id.listView);
+        artistList.setAdapter(adapter);
     }
 
     @Override

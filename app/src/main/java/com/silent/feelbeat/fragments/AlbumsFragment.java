@@ -10,6 +10,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +30,6 @@ public class AlbumsFragment extends Fragment implements LoaderManager.LoaderCall
     private static final int COUNT_COL = 2;
 
     private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
     private AlbumAdapter adapter;
 
     public static AlbumsFragment newInstance(String title){
@@ -44,8 +44,7 @@ public class AlbumsFragment extends Fragment implements LoaderManager.LoaderCall
     public void onAttach(Context context) {
         super.onAttach(context);
         adapter = new AlbumAdapter(context, null);
-        layoutManager = new GridLayoutManager(context, COUNT_COL);
-//        getLoaderManager().initLoader(LOADER_ID, null, this);
+        getLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
     @Nullable
@@ -58,6 +57,8 @@ public class AlbumsFragment extends Fragment implements LoaderManager.LoaderCall
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), COUNT_COL));
+        recyclerView.setAdapter(adapter);
     }
 
     @Override

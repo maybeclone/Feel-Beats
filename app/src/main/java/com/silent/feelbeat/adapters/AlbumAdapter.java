@@ -44,8 +44,6 @@ public class AlbumAdapter extends RecyclerViewCursor<AlbumAdapter.AlbumHolder> {
 
     @Override
     public void onBindViewHolder(final AlbumHolder holder, Cursor cursor) {
-        // set image
-
         final com.squareup.picasso.Target target = new com.squareup.picasso.Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
