@@ -12,6 +12,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="@dimen/height_music_player_bar" />
+        android:layout_marginBottom="@dimen/height_music_player_bar"
+        android:divider="@null"/>
 
 </android.support.constraint.ConstraintLayout>

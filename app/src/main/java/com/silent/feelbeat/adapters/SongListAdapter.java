@@ -52,14 +52,34 @@ public class SongListAdapter extends CursorAdapter{
     public SongListAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
         cursor = c;
+        sectionToOffset = null;
+        sectionToPosition = null;
+        indexer = null;
+        usedSectionNumbers = null;
         if(c == null){
             return;
         }
-        indexer = new AlphabetIndexer(c, c.getColumnIndex(MediaStore.Audio.Media.TITLE), "%ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-        sectionToPosition = new TreeMap<>();
-        sectionToOffset = new HashMap<>();
+        countHeader();
+    }
 
-        final int count = super.getCount();
+    private void countHeader(){
+        if(indexer == null){
+            indexer = new AlphabetIndexer(cursor, cursor.getColumnIndex(MediaStore.Audio.Media.TITLE), "%ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        } else {
+            indexer.setCursor(cursor);
+        }
+        if(sectionToPosition == null){
+            sectionToPosition = new TreeMap<>();
+        } else {
+            sectionToPosition.clear();
+        }
+
+        if(sectionToOffset == null){
+            sectionToOffset = new HashMap<>();
+        } else {
+            sectionToOffset.clear();
+        }
+        final int count = cursor.getCount();
         int i;
         for(i = count-1; i>=0; i--){
             sectionToPosition.put(indexer.getSectionForPosition(i), i);
@@ -169,6 +189,13 @@ public class SongListAdapter extends CursorAdapter{
             }
         }
         return TYPE_NORMAL;
+    }
+
+    @Override
+    public Cursor swapCursor(Cursor newCursor) {
+        cursor = newCursor;
+        countHeader();
+        return super.swapCursor(newCursor);
     }
 
     static class SongItemHolder {
