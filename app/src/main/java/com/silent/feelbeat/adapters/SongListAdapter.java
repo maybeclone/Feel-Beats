@@ -3,6 +3,7 @@ package com.silent.feelbeat.adapters;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.provider.MediaStore;
 import android.support.v4.content.Loader;
 import android.util.Log;
@@ -16,10 +17,12 @@ import android.widget.TextView;
 
 import com.silent.feelbeat.R;
 import com.silent.feelbeat.dataloaders.AlbumsLoader;
+import com.silent.feelbeat.dataloaders.SongsLoader;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -100,7 +103,7 @@ public class SongListAdapter extends CursorAdapter{
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, final ViewGroup parent) {
         int viewType = getItemViewType(position);
         switch (viewType){
             case TYPE_HEADER:
@@ -200,7 +203,21 @@ public class SongListAdapter extends CursorAdapter{
         return super.swapCursor(newCursor);
     }
 
-    static class SongItemHolder {
+    @Override
+    public long getItemId(int position) {
+        int type = getItemViewType(position);
+        switch (type){
+            case TYPE_HEADER:
+                return -1;
+            case TYPE_NORMAL:
+                cursor.moveToPosition(position - sectionToOffset.get(getSectionForPosition(position))-1);
+                long id = cursor.getLong(0);
+                return id;
+        }
+        return -1;
+    }
+
+    public static class SongItemHolder{
 
         public ImageView avaImage;
         public TextView titleText, artistText;
@@ -211,6 +228,7 @@ public class SongListAdapter extends CursorAdapter{
             titleText = (TextView) itemView.findViewById(R.id.titleText);
             artistText =(TextView) itemView.findViewById(R.id.artistText);
         }
+
     }
 
     static class HeaderItemHolder{

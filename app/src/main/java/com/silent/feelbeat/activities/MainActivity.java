@@ -24,6 +24,7 @@ import com.silent.feelbeat.dataloaders.SongsLoader;
 import com.silent.feelbeat.fragments.AlbumsFragment;
 import com.silent.feelbeat.fragments.ArtistsFragment;
 import com.silent.feelbeat.fragments.PlaylistFragment;
+import com.silent.feelbeat.fragments.QuickControlFragment;
 import com.silent.feelbeat.fragments.SongsFragment;
 import com.silent.feelbeat.models.Artist;
 
@@ -43,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
+
+        testQuickFragment();
     }
     private void initView(){
         toolbar = (Toolbar) findViewById(R.id.toolBar);
@@ -60,10 +63,14 @@ public class MainActivity extends AppCompatActivity {
         adapter = new TabAdapter(getSupportFragmentManager(), list);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(1);
-
     }
 
-
+    void testQuickFragment(){
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.quickControlContainer, new QuickControlFragment())
+                .commit();
+    }
 
 
 }

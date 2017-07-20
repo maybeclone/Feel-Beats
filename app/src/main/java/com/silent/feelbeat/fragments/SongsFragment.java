@@ -2,6 +2,7 @@ package com.silent.feelbeat.fragments;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 
@@ -19,6 +21,8 @@ import com.silent.feelbeat.R;
 import com.silent.feelbeat.adapters.SongListAdapter;
 import com.silent.feelbeat.dataloaders.SongsLoader;
 import com.silent.feelbeat.utils.SilentUtils;
+
+import java.io.IOException;
 
 /**
  * Created by silent on 7/17/2017.
@@ -62,6 +66,20 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         songsList = (ListView) view.findViewById(R.id.listView);
+        songsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("Status", "Playing music");
+                MediaPlayer player = new MediaPlayer();
+                try {
+                    player.setDataSource(getContext(), SongsLoader.getSongUri(id));
+                    player.prepare();
+                    player.start();
+                } catch (IOException e) {
+
+                }
+            }
+        });
         songsList.setAdapter(adapter);
     }
 

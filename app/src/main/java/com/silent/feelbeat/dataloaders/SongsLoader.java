@@ -1,6 +1,7 @@
 package com.silent.feelbeat.dataloaders;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -81,5 +82,9 @@ public class SongsLoader extends LoaderDB {
                                 PROJECTION[6] + " = ?",
                                 new String[]{"1"},
                                 ORDER_BY_NAME);
+    }
+
+    public static Uri getSongUri(long id){
+        return ContentUris.withAppendedId(SONG_URI, id);
     }
 }
