@@ -30,18 +30,21 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginEnd="24dp"
         app:layout_constraintTop_toTopOf="parent">
-        <ImageView
+        <ImageButton
+            android:id="@+id/previousIB"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_media_previous"/>
-        <ImageView
+            android:src="@android:drawable/ic_media_previous" />
+        <ImageButton
+            android:id="@+id/playIB"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_media_pause"/>
-        <ImageView
+            android:src="@drawable/play_pause" />
+        <ImageButton
+            android:id="@+id/nextIB"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_media_next"/>
+            android:src="@android:drawable/ic_media_next" />
     </LinearLayout>
 
     <LinearLayout
@@ -63,7 +66,7 @@
             android:text="Despacito" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/textArtist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Luis Fonsi" />

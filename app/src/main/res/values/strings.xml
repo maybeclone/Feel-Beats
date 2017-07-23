@@ -2,6 +2,6 @@
     <string name="app_name">Feel Beat</string>
     <string name="format_num_of_song">%d songs</string>
     <string name="format_info_artist">%1$d songs | %2$d albums</string>
-
+    <string name="service_description">This is a service for playing music on background. If you stopped it may be the music is stopped!</string>
 
 </resources>

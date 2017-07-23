@@ -154,6 +154,10 @@ public class SongListAdapter extends CursorAdapter{
         return usedSectionNumbers[i-1];
     }
 
+    public int getRealPosition(int position){
+        return position - sectionToOffset.get(getSectionForPosition(position)) - 1;
+    }
+
     @Override
     public int getViewTypeCount() {
         return TYPE_COUNT;

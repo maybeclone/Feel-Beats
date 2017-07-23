@@ -87,4 +87,22 @@ public class SongsLoader extends LoaderDB {
     public static Uri getSongUri(long id){
         return ContentUris.withAppendedId(SONG_URI, id);
     }
+
+    public static ArrayList<Song> getList(Cursor cursor){
+        ArrayList<Song> listSong = new ArrayList<>();
+        int now = cursor.getPosition();
+        cursor.moveToPosition(-1);
+        while(cursor.moveToNext()){
+            Song song = new Song(cursor.getLong(0),
+                    cursor.getString(1),
+                    cursor.getInt(4),
+                    cursor.getString(2),
+                    cursor.getString(3),
+                    cursor.getString(5),
+                    cursor.getLong(7));
+            listSong.add(song);
+        }
+        cursor.moveToPosition(now);
+        return listSong;
+    }
 }
