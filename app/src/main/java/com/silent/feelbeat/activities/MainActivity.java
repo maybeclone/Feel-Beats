@@ -1,14 +1,15 @@
 package com.silent.feelbeat.activities;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.Parcelable;
 import android.os.RemoteException;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -16,36 +17,25 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
-import android.widget.CursorAdapter;
-import android.widget.ListView;
 
 import com.silent.feelbeat.R;
-import com.silent.feelbeat.adapters.AlbumAdapter;
-import com.silent.feelbeat.adapters.ArtistAdapter;
-import com.silent.feelbeat.adapters.SongListAdapter;
 import com.silent.feelbeat.adapters.TabAdapter;
-import com.silent.feelbeat.callback.CallBackService;
-import com.silent.feelbeat.dataloaders.AlbumsLoader;
-import com.silent.feelbeat.dataloaders.ArtistLoader;
+import com.silent.feelbeat.callback.CallbackControl;
+import com.silent.feelbeat.callback.CallbackService;
 import com.silent.feelbeat.dataloaders.SongsLoader;
 import com.silent.feelbeat.fragments.AlbumsFragment;
 import com.silent.feelbeat.fragments.ArtistsFragment;
 import com.silent.feelbeat.fragments.PlaylistFragment;
 import com.silent.feelbeat.fragments.QuickControlFragment;
 import com.silent.feelbeat.fragments.SongsFragment;
-import com.silent.feelbeat.models.Artist;
 import com.silent.feelbeat.musicplayer.IPlayMusic;
 import com.silent.feelbeat.service.PlayingService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements CallBackService {
+public class MainActivity extends AppCompatActivity implements CallbackService, CallbackControl {
 
     // View
     private Toolbar toolbar;
@@ -53,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements CallBackService {
     private TabLayout tabLayout;
     private List<Fragment> list;
     private TabAdapter adapter;
+    private QuickControlFragment controlFragment;
 
     // Connect Service
     private ServiceConnection connection = new ServiceConnection() {
@@ -70,6 +61,21 @@ public class MainActivity extends AppCompatActivity implements CallBackService {
     private Messenger messenger;
     private boolean bound = false;
 
+    // Broacast Reciever
+    BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(IPlayMusic.RECEIVER_INFO)){
+                if(controlFragment!=null){
+                    controlFragment.updateInfo(intent.getLongExtra(IPlayMusic.EXTRA_ALBUMID, -1),
+                            intent.getStringExtra(IPlayMusic.EXTRA_TITLE),
+                            intent.getStringExtra(IPlayMusic.EXTRA_ARTIST));
+
+                }
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,12 +84,28 @@ public class MainActivity extends AppCompatActivity implements CallBackService {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(IPlayMusic.RECEIVER_INFO);
+        registerReceiver(receiver, filter);
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
+        unregisterReceiver(receiver);
         if(bound){
             unbindService(connection);
             bound = false;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Intent intent = new Intent(this, PlayingService.class);
+        stopService(intent);
     }
 
     private void initView(){
@@ -107,8 +129,11 @@ public class MainActivity extends AppCompatActivity implements CallBackService {
     }
 
     private void attachQuickControl(FragmentManager fragmentManager){
+        if(controlFragment == null){
+            controlFragment = QuickControlFragment.newInstance();
+        }
         fragmentManager.beginTransaction()
-                .replace(R.id.quickControlContainer, QuickControlFragment.newInstance())
+                .replace(R.id.quickControlContainer, controlFragment)
                 .commit();
     }
 
@@ -127,6 +152,33 @@ public class MainActivity extends AppCompatActivity implements CallBackService {
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+        }
+        controlFragment.setActivePlay();
+    }
+
+
+    @Override
+    public void pause() {
+        Message message = Message.obtain(null, IPlayMusic.PAUSE, 0, 0);
+        try {
+            messenger.send(message);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void start() {
+        if(messenger==null){
+            SongsFragment songsFragment = (SongsFragment) adapter.getItem(1);
+            playMusic(0, songsFragment.getAdapter().getCursor());
+            return;
+        }
+        Message message = Message.obtain(null, IPlayMusic.START, 0, 0);
+        try {
+            messenger.send(message);
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 }

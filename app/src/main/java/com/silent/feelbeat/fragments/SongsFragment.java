@@ -21,12 +21,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.silent.feelbeat.R;
 import com.silent.feelbeat.adapters.SongListAdapter;
-import com.silent.feelbeat.callback.CallBackService;
+import com.silent.feelbeat.callback.CallbackService;
 import com.silent.feelbeat.dataloaders.SongsLoader;
 import com.silent.feelbeat.utils.SilentUtils;
+
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 
@@ -49,7 +52,7 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
     private boolean mBound = false;
 
     // Communicate Activity
-    private CallBackService callBackService;
+    private CallbackService callBackService;
 
     public static SongsFragment newInstance(String title) {
         SongsFragment songsFragment = new SongsFragment();
@@ -63,8 +66,8 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
     public void onAttach(Context context) {
         super.onAttach(context);
         adapter = new SongListAdapter(context, null, 0);
-        if (context instanceof CallBackService) {
-            callBackService = (CallBackService) context;
+        if (context instanceof CallbackService) {
+            callBackService = (CallbackService) context;
         } else {
             throw new ClassCastException("Must implement CallBackService to handle communication with activity");
         }
@@ -98,6 +101,7 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         songsList = (ListView) view.findViewById(R.id.listView);
+        songsList.setEmptyView(view.findViewById(R.id.emptyText));
         songsList.setOnItemClickListener(this);
         songsList.setAdapter(adapter);
     }
@@ -126,7 +130,11 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        callBackService.playMusic(adapter.getSectionForPosition(position), adapter.getCursor());
+        callBackService.playMusic(adapter.getRealPosition(position), adapter.getCursor());
+    }
+
+    public SongListAdapter getAdapter(){
+        return this.adapter;
     }
 
 }

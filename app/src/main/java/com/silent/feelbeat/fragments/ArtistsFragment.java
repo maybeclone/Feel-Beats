@@ -55,6 +55,7 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         artistList = (ListView) view.findViewById(R.id.listView);
+        artistList.setEmptyView(view.findViewById(R.id.emptyText));
         artistList.setAdapter(adapter);
     }
 

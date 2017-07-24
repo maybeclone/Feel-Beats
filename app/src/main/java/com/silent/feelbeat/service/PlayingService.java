@@ -48,7 +48,6 @@ public class PlayingService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         musicPlayer.setList(intent.<Song>getParcelableArrayListExtra(EXTRA_LIST));
-        int position = intent.getIntExtra(EXTRA_POSITION, 0);
         Message message = Message.obtain(null, IPlayMusic.PLAY, intent.getIntExtra(EXTRA_POSITION, 0), 0);
         try {
             messenger.send(message);

@@ -1,6 +1,7 @@
 package com.silent.feelbeat.musicplayer;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.Log;
@@ -62,6 +63,11 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
             play.setDataSource(context, uri);
             play.prepare();
             play.start();
+            Intent intent = new Intent(RECEIVER_INFO);
+            intent.putExtra(IPlayMusic.EXTRA_TITLE, list.get(position).title);
+            intent.putExtra(IPlayMusic.EXTRA_ARTIST, list.get(position).artist);
+            intent.putExtra(IPlayMusic.EXTRA_ALBUMID, list.get(position).ablumId);
+            context.sendBroadcast(intent);
         } catch (IOException e) {
             e.printStackTrace();
         }
