@@ -53,6 +53,10 @@ public class Song extends Item implements Parcelable{
         duration = in.readInt();
     }
 
+    public int getSeconds(){
+        return duration/1000;
+    }
+
     public static final Creator<Song> CREATOR = new Creator<Song>() {
         @Override
         public Song createFromParcel(Parcel in) {

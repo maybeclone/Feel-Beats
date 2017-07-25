@@ -13,11 +13,13 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.silent.feelbeat.R;
 import com.silent.feelbeat.callback.CallbackControl;
 import com.silent.feelbeat.dataloaders.AlbumsLoader;
+import com.silent.feelbeat.models.Song;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
@@ -32,6 +34,7 @@ public class QuickControlFragment extends Fragment implements View.OnClickListen
     private CallbackControl control;
     private TextView title, artist;
     private ImageView imageView;
+    private ProgressBar progressBar;
 
     public static QuickControlFragment newInstance(){
         return new QuickControlFragment();
@@ -58,6 +61,7 @@ public class QuickControlFragment extends Fragment implements View.OnClickListen
         title = (TextView) view.findViewById(R.id.textName);
         artist = (TextView) view.findViewById(R.id.textArtist);
         play = (ImageButton) view.findViewById(R.id.playIB);
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
         imageView = (ImageView) view.findViewById(R.id.imageView);
         play.setOnClickListener(this);
     }
@@ -77,10 +81,16 @@ public class QuickControlFragment extends Fragment implements View.OnClickListen
         }
     }
 
-    public void updateInfo(long idAlbum, String _title, String _artist){
-        Picasso.with(getContext()).load(AlbumsLoader.getUriAlbumArt(idAlbum)).into(imageView);
-        title.setText(_title);
-        artist.setText(_artist);
+    public void updateInfo(Song song){
+        Picasso.with(getContext()).load(AlbumsLoader.getUriAlbumArt(song.ablumId)).into(imageView);
+        title.setText(song.title);
+        artist.setText(song.artist);
+        progressBar.setMax(song.getSeconds());
+        progressBar.setProgress(0);
+    }
+
+    public void updateProgess(int second){
+        progressBar.setProgress(second);
     }
 
     public void setActivePlay(){

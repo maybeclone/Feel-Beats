@@ -57,6 +57,12 @@ public class PlayingService extends Service {
         return START_STICKY;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        musicPlayer.destroy();
+    }
+
     // Handler request from Activity or Fragment
     private class ReceiveHandler extends Handler{
         @Override

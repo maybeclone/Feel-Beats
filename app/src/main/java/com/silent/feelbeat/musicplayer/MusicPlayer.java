@@ -2,8 +2,11 @@ package com.silent.feelbeat.musicplayer;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.silent.feelbeat.dataloaders.SongsLoader;
@@ -55,23 +58,30 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
         this.nowPlay = nowPlay;
     }
 
+    public void updateInfo(int position){
+        Intent intent = new Intent(RECEIVER_INFO);
+        intent.putExtra(IPlayMusic.EXTRA_SONG, list.get(position));
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+
+    public int getNowPlay() {
+        return nowPlay;
+    }
+
     @Override
     public void play(int position){
         Uri uri = SongsLoader.getSongUri(list.get(position).id);
         try {
             setNowPlay(position);
+            play.setAudioStreamType(AudioManager.STREAM_MUSIC);
             play.setDataSource(context, uri);
             play.prepare();
             play.start();
-            Intent intent = new Intent(RECEIVER_INFO);
-            intent.putExtra(IPlayMusic.EXTRA_TITLE, list.get(position).title);
-            intent.putExtra(IPlayMusic.EXTRA_ARTIST, list.get(position).artist);
-            intent.putExtra(IPlayMusic.EXTRA_ALBUMID, list.get(position).ablumId);
-            context.sendBroadcast(intent);
+            updateInfo(position);
+            handler.postDelayed(runnable, 1000);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
@@ -102,6 +112,7 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
     @Override
     public void start() {
         play.start();
+        handler.postDelayed(runnable, 1000);
     }
 
     @Override
@@ -120,4 +131,17 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
         context = null;
         play.release();
     }
+
+    private Handler handler = new Handler();
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            if(play.isPlaying()){
+                Intent intent = new Intent(IPlayMusic.RECEVIER_PROCESS);
+                intent.putExtra(IPlayMusic.EXTRA_PLAYING_POSITION, play.getCurrentPosition()/1000);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                handler.postDelayed(this, 1000);
+            }
+        }
+    };
 }

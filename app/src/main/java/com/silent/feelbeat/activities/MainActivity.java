@@ -14,10 +14,12 @@ import android.os.RemoteException;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import com.silent.feelbeat.R;
 import com.silent.feelbeat.adapters.TabAdapter;
@@ -29,6 +31,7 @@ import com.silent.feelbeat.fragments.ArtistsFragment;
 import com.silent.feelbeat.fragments.PlaylistFragment;
 import com.silent.feelbeat.fragments.QuickControlFragment;
 import com.silent.feelbeat.fragments.SongsFragment;
+import com.silent.feelbeat.models.Song;
 import com.silent.feelbeat.musicplayer.IPlayMusic;
 import com.silent.feelbeat.service.PlayingService;
 
@@ -65,13 +68,16 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if(controlFragment == null){
+                return;
+            }
             if(intent.getAction().equals(IPlayMusic.RECEIVER_INFO)){
-                if(controlFragment!=null){
-                    controlFragment.updateInfo(intent.getLongExtra(IPlayMusic.EXTRA_ALBUMID, -1),
-                            intent.getStringExtra(IPlayMusic.EXTRA_TITLE),
-                            intent.getStringExtra(IPlayMusic.EXTRA_ARTIST));
-
-                }
+                    Song song = intent.getParcelableExtra(IPlayMusic.EXTRA_SONG);
+                    controlFragment.updateInfo(song);
+            } else if(intent.getAction().equals(IPlayMusic.RECEVIER_PROCESS)){
+                int second = intent.getIntExtra(IPlayMusic.EXTRA_PLAYING_POSITION, -1);
+                Log.d("Receiver", second+"");
+                controlFragment.updateProgess(second);
             }
         }
     };
@@ -80,30 +86,34 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(IPlayMusic.RECEIVER_INFO);
+        filter.addAction(IPlayMusic.RECEVIER_PROCESS);
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
+
         initView();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(IPlayMusic.RECEIVER_INFO);
-        registerReceiver(receiver, filter);
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        unregisterReceiver(receiver);
-        if(bound){
-            unbindService(connection);
-            bound = false;
-        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        if(bound){
+            unbindService(connection);
+            bound = false;
+        }
         Intent intent = new Intent(this, PlayingService.class);
         stopService(intent);
     }
@@ -139,6 +149,9 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
 
     @Override
     public void playMusic(int position, Cursor cursor){
+        if(cursor==null){
+            return;
+        }
         if(!bound){
             Intent intent = new Intent(this, PlayingService.class);
             intent.putParcelableArrayListExtra(PlayingService.EXTRA_LIST, SongsLoader.getList(cursor));
@@ -180,5 +193,5 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-    }
-}
+    }}
+
