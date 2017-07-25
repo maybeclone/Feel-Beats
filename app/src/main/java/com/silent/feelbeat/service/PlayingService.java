@@ -86,6 +86,11 @@ public class PlayingService extends Service {
                 case IPlayMusic.PREVIOUS:
                     musicPlayer.previous();
                     break;
+                case IPlayMusic.ON_STOP:
+                    musicPlayer.setOnStop(true);
+                    break;
+                case IPlayMusic.ON_RESTART:
+                    musicPlayer.resendBroadcast();
                 default:
                     super.handleMessage(msg);
                     break;

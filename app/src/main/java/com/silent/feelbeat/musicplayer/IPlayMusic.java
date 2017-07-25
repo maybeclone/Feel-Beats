@@ -15,6 +15,9 @@ public interface IPlayMusic {
     int PREVIOUS = 5;
     int PLAY_NEW = 6;
 
+    int ON_STOP = 100;
+    int ON_RESTART = 101;
+
     String RECEIVER_INFO = "com.silent.feelbeat.info";
     String RECEVIER_PROCESS = "com.silent.feelbeat.process";
 

@@ -28,8 +28,13 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
     private MediaPlayer play;
     private int nowPlay;
     private Context context;
+    private boolean onStop = false;
 
-   public static MusicPlayer getInstance(Context context){
+    public void setOnStop(boolean onStop) {
+        this.onStop = onStop;
+    }
+
+    public static MusicPlayer getInstance(Context context){
        if(musicPlayer==null){
            musicPlayer = new MusicPlayer(context);
            return musicPlayer;
@@ -136,7 +141,7 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            if(play.isPlaying()){
+            if(play.isPlaying() && !onStop){
                 Intent intent = new Intent(IPlayMusic.RECEVIER_PROCESS);
                 intent.putExtra(IPlayMusic.EXTRA_PLAYING_POSITION, play.getCurrentPosition()/1000);
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
@@ -144,4 +149,9 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
             }
         }
     };
+
+    public void resendBroadcast() {
+        onStop = false;
+        handler.postDelayed(runnable, 0);
+    }
 }

@@ -98,12 +98,28 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
     @Override
     protected void onStart() {
         super.onStart();
-
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        Message message = Message.obtain(null, IPlayMusic.ON_STOP, 0, 0);
+        try {
+            messenger.send(message);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Message message = Message.obtain(null, IPlayMusic.ON_RESTART, 0, 0);
+        try {
+            messenger.send(message);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
