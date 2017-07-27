@@ -2,7 +2,6 @@ package com.silent.feelbeat.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.provider.MediaStore;
 
 import com.silent.feelbeat.abstraction.Item;
 
@@ -13,8 +12,9 @@ import com.silent.feelbeat.abstraction.Item;
 public class Song extends Item implements Parcelable{
 
     public String album;
-    public long ablumId;
+    public long albumId;
     public String artist;
+    public String artistID;
     public String composer;
     public int duration;
 
@@ -24,7 +24,7 @@ public class Song extends Item implements Parcelable{
         artist = "";
         composer = "";
         duration = -1;
-        ablumId = -1;
+        albumId = -1;
     }
 
     public Song(long id, String title, int duration, String artist, String composer, String album){
@@ -41,13 +41,23 @@ public class Song extends Item implements Parcelable{
         this.artist = artist;
         this.composer = composer;
         this.album = album;
-        this.ablumId = albumId;
+        this.albumId = albumId;
+    }
+
+    public Song(long id, String title, String album, long albumId, String artist, String artistID, String composer, int duration) {
+        super(id, title);
+        this.album = album;
+        this.albumId = albumId;
+        this.artist = artist;
+        this.artistID = artistID;
+        this.composer = composer;
+        this.duration = duration;
     }
 
     private Song(Parcel in) {
         super(in.readLong(), in.readString());
         album = in.readString();
-        ablumId = in.readLong();
+        albumId = in.readLong();
         artist = in.readString();
         composer = in.readString();
         duration = in.readInt();
@@ -84,7 +94,7 @@ public class Song extends Item implements Parcelable{
         dest.writeLong(id);
         dest.writeString(title);
         dest.writeString(album);
-        dest.writeLong(ablumId);
+        dest.writeLong(albumId);
         dest.writeString(artist);
         dest.writeString(composer);
         dest.writeInt(duration);

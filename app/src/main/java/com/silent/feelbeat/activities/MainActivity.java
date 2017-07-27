@@ -11,42 +11,31 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
 import com.silent.feelbeat.R;
-import com.silent.feelbeat.adapters.TabAdapter;
 import com.silent.feelbeat.callback.CallbackControl;
 import com.silent.feelbeat.callback.CallbackService;
 import com.silent.feelbeat.dataloaders.SongsLoader;
-import com.silent.feelbeat.fragments.AlbumsFragment;
 import com.silent.feelbeat.fragments.ArtistsFragment;
-import com.silent.feelbeat.fragments.PlaylistFragment;
+import com.silent.feelbeat.fragments.DetailArtistFragment;
+import com.silent.feelbeat.fragments.ListFragment;
 import com.silent.feelbeat.fragments.QuickControlFragment;
 import com.silent.feelbeat.fragments.SongsFragment;
 import com.silent.feelbeat.models.Song;
 import com.silent.feelbeat.musicplayer.IPlayMusic;
 import com.silent.feelbeat.service.PlayingService;
 
-import java.util.ArrayList;
-import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements CallbackService, CallbackControl {
+public class MainActivity extends AppCompatActivity implements CallbackService, CallbackControl, ArtistsFragment.CallbackArtistFragment {
 
-    // View
-    private Toolbar toolbar;
-    private ViewPager viewPager;
-    private TabLayout tabLayout;
-    private List<Fragment> list;
-    private TabAdapter adapter;
+
     private QuickControlFragment controlFragment;
+    private DetailArtistFragment detailArtistFragment;
+    private ListFragment listFragment;
 
     // Connect Service
     private ServiceConnection connection = new ServiceConnection() {
@@ -68,15 +57,14 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(controlFragment == null){
+            if (controlFragment == null) {
                 return;
             }
-            if(intent.getAction().equals(IPlayMusic.RECEIVER_INFO)){
-                    Song song = intent.getParcelableExtra(IPlayMusic.EXTRA_SONG);
-                    controlFragment.updateInfo(song);
-            } else if(intent.getAction().equals(IPlayMusic.RECEVIER_PROCESS)){
+            if (intent.getAction().equals(IPlayMusic.RECEIVER_INFO)) {
+                Song song = intent.getParcelableExtra(IPlayMusic.EXTRA_SONG);
+                controlFragment.updateInfo(song);
+            } else if (intent.getAction().equals(IPlayMusic.RECEVIER_PROCESS)) {
                 int second = intent.getIntExtra(IPlayMusic.EXTRA_PLAYING_POSITION, -1);
-                Log.d("Receiver", second+"");
                 controlFragment.updateProgess(second);
             }
         }
@@ -92,7 +80,10 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
         filter.addAction(IPlayMusic.RECEVIER_PROCESS);
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
 
-        initView();
+        if (savedInstanceState == null) {
+            attachQuickControl(getSupportFragmentManager());
+            attachMainContent(getSupportFragmentManager());
+        }
     }
 
     @Override
@@ -103,22 +94,26 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
     @Override
     protected void onStop() {
         super.onStop();
-        Message message = Message.obtain(null, IPlayMusic.ON_STOP, 0, 0);
-        try {
-            messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        if (bound) {
+            Message message = Message.obtain(null, IPlayMusic.ON_STOP, 0, 0);
+            try {
+                messenger.send(message);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        Message message = Message.obtain(null, IPlayMusic.ON_RESTART, 0, 0);
-        try {
-            messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        if (bound) {
+            Message message = Message.obtain(null, IPlayMusic.ON_RESTART, 0, 0);
+            try {
+                messenger.send(message);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -126,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
     protected void onDestroy() {
         super.onDestroy();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
-        if(bound){
+        if (bound) {
             unbindService(connection);
             bound = false;
         }
@@ -134,28 +129,9 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
         stopService(intent);
     }
 
-    private void initView(){
-        toolbar = (Toolbar) findViewById(R.id.toolBar);
-        setSupportActionBar(toolbar);
-        viewPager = (ViewPager) findViewById(R.id.viewPager);
-        tabLayout = (TabLayout) findViewById(R.id.tabLayout);
 
-        list = new ArrayList<>();
-        list.add(ArtistsFragment.newInstance("Artists"));
-        list.add(SongsFragment.newInstance("Songs"));
-        list.add(AlbumsFragment.newInstance("Albums"));
-        list.add(PlaylistFragment.newInstance("Playlist"));
-
-        tabLayout.setupWithViewPager(viewPager);
-        adapter = new TabAdapter(getSupportFragmentManager(), list);
-        viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(1);
-
-        attachQuickControl(getSupportFragmentManager());
-    }
-
-    private void attachQuickControl(FragmentManager fragmentManager){
-        if(controlFragment == null){
+    private void attachQuickControl(FragmentManager fragmentManager) {
+        if (controlFragment == null) {
             controlFragment = QuickControlFragment.newInstance();
         }
         fragmentManager.beginTransaction()
@@ -163,17 +139,26 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
                 .commit();
     }
 
+    private void attachMainContent(FragmentManager fragmentManager) {
+        if (listFragment == null) {
+            listFragment = new ListFragment();
+        }
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragmentMainContent, listFragment)
+                .commit();
+    }
+
     @Override
-    public void playMusic(int position, Cursor cursor){
-        if(cursor==null){
+    public void playMusic(int position, Cursor cursor) {
+        if (cursor == null) {
             return;
         }
-        if(!bound){
+        if (!bound) {
             Intent intent = new Intent(this, PlayingService.class);
             intent.putParcelableArrayListExtra(PlayingService.EXTRA_LIST, SongsLoader.getList(cursor));
             intent.putExtra(PlayingService.EXTRA_POSITION, position);
             startService(intent);
-            bindService(intent,connection, Context.BIND_AUTO_CREATE);
+            bindService(intent, connection, Context.BIND_AUTO_CREATE);
         } else {
             Message message = Message.obtain(null, IPlayMusic.PLAY_NEW, position, 0);
             try {
@@ -196,10 +181,12 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
         }
     }
 
+
+    // edit after
     @Override
     public void start() {
-        if(messenger==null){
-            SongsFragment songsFragment = (SongsFragment) adapter.getItem(1);
+        if (messenger == null) {
+            SongsFragment songsFragment = (SongsFragment) listFragment.getFragment(1);
             playMusic(0, songsFragment.getAdapter().getCursor());
             return;
         }
@@ -209,5 +196,23 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-    }}
+    }
+    @Override
+    public void onItemClick(long artistID, String artist) {
+        if(detailArtistFragment == null){
+            detailArtistFragment = DetailArtistFragment.newInstance(artistID, artist);
+        } else{
+            Bundle args = detailArtistFragment.getArguments();
+            args.putLong(DetailArtistFragment.EXTRA_ARTIST_ID, artistID);
+            args.putString(DetailArtistFragment.EXTRA_ARTIST, artist);
+            detailArtistFragment.setArguments(args);
+        }
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentMainContent, detailArtistFragment)
+                .addToBackStack(null)
+                .commit();
+    }
+}
 

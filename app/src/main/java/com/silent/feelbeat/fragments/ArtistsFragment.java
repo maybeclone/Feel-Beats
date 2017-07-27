@@ -11,7 +11,7 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.silent.feelbeat.R;
@@ -23,12 +23,13 @@ import com.silent.feelbeat.utils.SilentUtils;
  * Created by silent on 7/17/2017.
  */
 
-public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener{
 
     private static final int LOADER_ID = 0x00001;
 
     private ListView artistList;
     private ArtistAdapter adapter;
+    private CallbackArtistFragment callback;
 
     public static ArtistsFragment newInstance(String title){
         ArtistsFragment artistsFragment = new ArtistsFragment();
@@ -41,6 +42,11 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        if(context instanceof CallbackArtistFragment){
+            callback = (CallbackArtistFragment) context;
+        } else {
+            throw new ClassCastException(" must be implemented CallbackArtistFragment");
+        }
         adapter = new ArtistAdapter(context, null, 0);
         getLoaderManager().initLoader(LOADER_ID, null, this);
     }
@@ -57,6 +63,7 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
         artistList = (ListView) view.findViewById(R.id.listView);
         artistList.setEmptyView(view.findViewById(R.id.emptyText));
         artistList.setAdapter(adapter);
+        artistList.setOnItemClickListener(this);
     }
 
     @Override
@@ -73,5 +80,15 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         adapter.swapCursor(null);
+    }
+
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        callback.onItemClick(id, adapter.getStringArtist(position));
+    }
+
+    public interface CallbackArtistFragment {
+        void onItemClick(long artistID, String artist);
     }
 }

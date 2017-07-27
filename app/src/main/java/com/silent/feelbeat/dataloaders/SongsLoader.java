@@ -28,7 +28,8 @@ public class SongsLoader extends LoaderDB {
                                                MediaStore.Audio.Media.DURATION,
                                                MediaStore.Audio.Media.ALBUM,
                                                MediaStore.Audio.Media.IS_MUSIC,
-                                               MediaStore.Audio.Media.ALBUM_ID};
+                                               MediaStore.Audio.Media.ALBUM_ID,
+                                               MediaStore.Audio.Media.ARTIST_ID};
 
     public final static Uri SONG_URI = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
     public final static String ORDER_BY_NAME = PROJECTION[1]+" COLLATE LOCALIZED ASC";
@@ -36,6 +37,7 @@ public class SongsLoader extends LoaderDB {
     public SongsLoader(){
 
     }
+
 
     public SongsLoader(ContentResolver contentResolver) {
         super(contentResolver);
@@ -48,6 +50,14 @@ public class SongsLoader extends LoaderDB {
             return null;
         }
         return contentResolver.query(SONG_URI, PROJECTION, PROJECTION[6] + "= ?", new String[]{"1"}, ORDER_BY_NAME);
+    }
+
+    public Cursor getCursor(long artistID){
+        if(contentResolver == null){
+            return null;
+        }
+        return contentResolver.query(SONG_URI, PROJECTION, PROJECTION[6] + "= ? AND "+PROJECTION[8]+" = ?",
+                new String[]{"1", artistID+""}, ORDER_BY_NAME);
     }
 
     @Override
@@ -82,6 +92,15 @@ public class SongsLoader extends LoaderDB {
                                 PROJECTION[6] + " = ?",
                                 new String[]{"1"},
                                 ORDER_BY_NAME);
+    }
+
+    public CursorLoader getCursorLoader(Context context, long artistID) {
+        return new CursorLoader(context,
+                SONG_URI,
+                PROJECTION,
+                PROJECTION[6] + " = ? AND " + PROJECTION[8] + " = ? ",
+                new String[]{"1", artistID+""},
+                ORDER_BY_NAME);
     }
 
     public static Uri getSongUri(long id){

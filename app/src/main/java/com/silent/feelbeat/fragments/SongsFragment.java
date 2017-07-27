@@ -42,10 +42,6 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
     private SongListAdapter adapter;
     private ListView songsList;
 
-    // Connect Service
-    private ServiceConnection mConnection;
-    private Messenger mMessenger;
-    private boolean mBound = false;
 
     // Communicate Activity
     private CallbackService callBackService;
@@ -73,18 +69,6 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getLoaderManager().initLoader(LOADER_ID, null, this);
-        mConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                mMessenger = new Messenger(service);
-                mBound = true;
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                mBound = false;
-            }
-        };
     }
 
     @Nullable

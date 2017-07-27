@@ -145,6 +145,26 @@ public class ArtistAdapter extends CursorAdapter {
 
     }
 
+    @Override
+    public long getItemId(int position) {
+        int type = getItemViewType(position);
+        switch (type){
+            case TYPE_HEADER:
+                return -1;
+            case TYPE_NORMAL:
+                cursor.moveToPosition(position - sectionToOffset.get(getSectionToPosition(position))-1);
+                long id = cursor.getLong(0);
+                return id;
+        }
+        return -1;
+    }
+
+    public String getStringArtist(int position){
+        int i = position - sectionToOffset.get(getSectionToPosition(position))-1;
+        cursor.moveToPosition(i);
+        return cursor.getString(1);
+    }
+
     public int getSectionToPosition(int position){
         int maxLength = usedSection.length;
         int i=0;

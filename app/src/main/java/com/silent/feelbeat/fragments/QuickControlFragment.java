@@ -4,13 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.telecom.Call;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -21,8 +17,6 @@ import com.silent.feelbeat.callback.CallbackControl;
 import com.silent.feelbeat.dataloaders.AlbumsLoader;
 import com.silent.feelbeat.models.Song;
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
 
 /**
  * Created by silent on 7/20/2017.
@@ -82,7 +76,7 @@ public class QuickControlFragment extends Fragment implements View.OnClickListen
     }
 
     public void updateInfo(Song song){
-        Picasso.with(getContext()).load(AlbumsLoader.getUriAlbumArt(song.ablumId)).into(imageView);
+        Picasso.with(getContext()).load(AlbumsLoader.getUriAlbumArt(song.albumId)).into(imageView);
         title.setText(song.title);
         artist.setText(song.artist);
         progressBar.setMax(song.getSeconds());

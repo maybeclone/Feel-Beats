@@ -7,6 +7,6 @@
     <dimen name="artist_tv_item">13sp</dimen>
 
     <!--quick control bar-->
-    <dimen name="height_music_player_bar">65dp</dimen>
+    <dimen name="height_quick_control">65dp</dimen>
     <dimen name="art_album_size">30dp</dimen>
 </resources>
