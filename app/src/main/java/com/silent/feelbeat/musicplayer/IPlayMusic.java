@@ -14,6 +14,8 @@ public interface IPlayMusic {
     int NEXT = 4;
     int PREVIOUS = 5;
     int PLAY_NEW = 6;
+    int SEEK_TO = 7;
+    int PLAY_NEW_LIST = 8;
 
     int ON_STOP = 100;
     int ON_RESTART = 101;
@@ -29,5 +31,6 @@ public interface IPlayMusic {
     int previous();
     void pause();
     void start();
+    void seekTo(long position);
     void playNew(int position);
 }

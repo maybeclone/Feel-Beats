@@ -9,4 +9,7 @@ import android.database.Cursor;
 public interface CallbackControl {
     void pause();
     void start();
+    void seekTo(long position);
+    void next();
+    void previous();
 }

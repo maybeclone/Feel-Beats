@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.silent.feelbeat.R;
 import com.silent.feelbeat.callback.CallbackControl;
@@ -24,7 +25,6 @@ import com.silent.feelbeat.fragments.ArtistsFragment;
 import com.silent.feelbeat.fragments.DetailArtistFragment;
 import com.silent.feelbeat.fragments.ListFragment;
 import com.silent.feelbeat.fragments.QuickControlFragment;
-import com.silent.feelbeat.fragments.SongsFragment;
 import com.silent.feelbeat.models.Song;
 import com.silent.feelbeat.musicplayer.IPlayMusic;
 import com.silent.feelbeat.service.PlayingService;
@@ -65,7 +65,8 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
                 controlFragment.updateInfo(song);
             } else if (intent.getAction().equals(IPlayMusic.RECEVIER_PROCESS)) {
                 int second = intent.getIntExtra(IPlayMusic.EXTRA_PLAYING_POSITION, -1);
-                controlFragment.updateProgess(second);
+                controlFragment.updateProgress(second);
+                Log.d("Receiver", second+"");
             }
         }
     };
@@ -148,23 +149,39 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
                 .commit();
     }
 
+    private Cursor oldCursor = null;
+
     @Override
     public void playMusic(int position, Cursor cursor) {
         if (cursor == null) {
             return;
         }
-        if (!bound) {
-            Intent intent = new Intent(this, PlayingService.class);
-            intent.putParcelableArrayListExtra(PlayingService.EXTRA_LIST, SongsLoader.getList(cursor));
-            intent.putExtra(PlayingService.EXTRA_POSITION, position);
-            startService(intent);
-            bindService(intent, connection, Context.BIND_AUTO_CREATE);
-        } else {
+        if(oldCursor == cursor){
+            Log.d("Play Music", "Old Cursor");
             Message message = Message.obtain(null, IPlayMusic.PLAY_NEW, position, 0);
             try {
                 messenger.send(message);
             } catch (RemoteException e) {
                 e.printStackTrace();
+            }
+        } else {
+            oldCursor = cursor;
+            Log.d("Play Music", "New Cursor");
+            if(!bound) {
+                Intent intent = new Intent(this, PlayingService.class);
+                intent.putParcelableArrayListExtra(PlayingService.EXTRA_LIST, SongsLoader.getList(cursor));
+                intent.putExtra(PlayingService.EXTRA_POSITION, position);
+                startService(intent);
+                bindService(intent, connection, Context.BIND_AUTO_CREATE);
+            } else {
+                Bundle bundle = new Bundle();
+                bundle.putParcelableArrayList(PlayingService.EXTRA_LIST, SongsLoader.getList(cursor));
+                Message message = Message.obtain(null, IPlayMusic.PLAY_NEW, position, 0);
+                try {
+                    messenger.send(message);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
         }
         controlFragment.setActivePlay();
@@ -185,9 +202,7 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
     // edit after
     @Override
     public void start() {
-        if (messenger == null) {
-            SongsFragment songsFragment = (SongsFragment) listFragment.getFragment(1);
-            playMusic(0, songsFragment.getAdapter().getCursor());
+        if (!bound) {
             return;
         }
         Message message = Message.obtain(null, IPlayMusic.START, 0, 0);
@@ -197,6 +212,40 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void seekTo(long position) {
+        if(!bound){
+            return;
+        }
+        Message message = Message.obtain(null, IPlayMusic.SEEK_TO, (int) position, 0);
+        try {
+            messenger.send(message);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void next() {
+        Message message = Message.obtain(null, IPlayMusic.NEXT, 0, 0);
+        try {
+            messenger.send(message);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void previous() {
+        Message message = Message.obtain(null, IPlayMusic.PREVIOUS, 0, 0);
+        try {
+            messenger.send(message);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onItemClick(long artistID, String artist) {
         if(detailArtistFragment == null){

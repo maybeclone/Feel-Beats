@@ -2,6 +2,7 @@ package com.silent.feelbeat.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -86,11 +87,20 @@ public class PlayingService extends Service {
                 case IPlayMusic.PREVIOUS:
                     musicPlayer.previous();
                     break;
+                case IPlayMusic.SEEK_TO:
+                    musicPlayer.seekTo(msg.arg1);
+                    break;
                 case IPlayMusic.ON_STOP:
                     musicPlayer.setOnStop(true);
                     break;
                 case IPlayMusic.ON_RESTART:
                     musicPlayer.resendBroadcast();
+                    break;
+                case IPlayMusic.PLAY_NEW_LIST:
+                    Bundle bundle = msg.getData();
+                    musicPlayer.setList(bundle.<Song>getParcelableArrayList(EXTRA_LIST));
+                    musicPlayer.playNew(msg.arg1);
+                    break;
                 default:
                     super.handleMessage(msg);
                     break;

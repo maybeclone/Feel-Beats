@@ -29,6 +29,7 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
     private int nowPlay;
     private Context context;
     private boolean onStop = false;
+    private boolean sendReceiver = false;
 
     public void setOnStop(boolean onStop) {
         this.onStop = onStop;
@@ -46,6 +47,7 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
        this.context = context;
        play = new MediaPlayer();
        list = new ArrayList<>();
+       play.setAudioStreamType(AudioManager.STREAM_MUSIC);
        nowPlay = -1;
        play.setOnCompletionListener(this);
    }
@@ -77,13 +79,18 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
     public void play(int position){
         Uri uri = SongsLoader.getSongUri(list.get(position).id);
         try {
+            Log.d("Uri", uri.toString());
             setNowPlay(position);
-            play.setAudioStreamType(AudioManager.STREAM_MUSIC);
             play.setDataSource(context, uri);
             play.prepare();
+
             play.start();
             updateInfo(position);
-            handler.postDelayed(runnable, 1000);
+            if(!sendReceiver){
+                sendReceiver = true;
+                handler.postDelayed(runnable, 1000);
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -117,7 +124,18 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
     @Override
     public void start() {
         play.start();
-        handler.postDelayed(runnable, 1000);
+        if(!sendReceiver){
+            sendReceiver = true;
+            handler.postDelayed(runnable, 1000);
+        }
+    }
+
+    @Override
+    public void seekTo(long position) {
+        if (position<0){
+            position = 0;
+        }
+        play.seekTo((int) position);
     }
 
     @Override
@@ -146,6 +164,8 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
                 intent.putExtra(IPlayMusic.EXTRA_PLAYING_POSITION, play.getCurrentPosition()/1000);
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 handler.postDelayed(this, 1000);
+            } else {
+                sendReceiver = false;
             }
         }
     };

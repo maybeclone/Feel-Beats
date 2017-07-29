@@ -11,12 +11,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.silent.feelbeat.R;
 import com.silent.feelbeat.adapters.SongListArtistAdapter;
+import com.silent.feelbeat.callback.CallbackService;
 import com.silent.feelbeat.dataloaders.SongsLoader;
 import com.silent.feelbeat.utils.ColorUtils;
 import com.silent.feelbeat.utils.SilentUtils;
@@ -25,7 +27,7 @@ import com.silent.feelbeat.utils.SilentUtils;
  * Created by silent on 7/27/2017.
  */
 
-public class DetailArtistFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DetailArtistFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
     public static final String EXTRA_ARTIST_ID = "artistid";
     public static final String EXTRA_ARTIST = "artist";
@@ -34,6 +36,7 @@ public class DetailArtistFragment extends Fragment implements LoaderManager.Load
     private ImageView imageView;
     private ListView listView;
     private SongListArtistAdapter adapter;
+    private CallbackService callbackService;
 
     private static final int LOADER_ID = 1;
 
@@ -50,6 +53,9 @@ public class DetailArtistFragment extends Fragment implements LoaderManager.Load
     public void onAttach(Context context) {
         super.onAttach(context);
         adapter = new SongListArtistAdapter(getContext(), null, 0);
+        if(context instanceof CallbackService){
+            callbackService = (CallbackService) context;
+        }
     }
 
     @Override
@@ -76,6 +82,7 @@ public class DetailArtistFragment extends Fragment implements LoaderManager.Load
         toolbar = (Toolbar) view.findViewById(R.id.toolBar);
 
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
 
         Bundle args = getArguments();
         String artist = args.getString(EXTRA_ARTIST);
@@ -100,5 +107,10 @@ public class DetailArtistFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         adapter.swapCursor(null);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        callbackService.playMusic(position, adapter.getCursor());
     }
 }
