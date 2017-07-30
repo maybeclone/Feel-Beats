@@ -9,4 +9,7 @@
     <!--quick control bar-->
     <dimen name="height_quick_control">65dp</dimen>
     <dimen name="art_album_size">30dp</dimen>
+
+    <!--fragment_detail_album-->
+    <dimen name="image_wheel">50dp</dimen>
 </resources>

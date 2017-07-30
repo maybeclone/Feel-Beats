@@ -113,4 +113,5 @@ public class DetailArtistFragment extends Fragment implements LoaderManager.Load
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         callbackService.playMusic(position, adapter.getCursor());
     }
+
 }

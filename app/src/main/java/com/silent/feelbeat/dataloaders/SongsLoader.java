@@ -103,6 +103,15 @@ public class SongsLoader extends LoaderDB {
                 ORDER_BY_NAME);
     }
 
+    public CursorLoader getCursorLoaderAlbum(Context context, long albumID) {
+        return new CursorLoader(context,
+                SONG_URI,
+                PROJECTION,
+                PROJECTION[6] + " = ? AND " + PROJECTION[7] + " = ? ",
+                new String[]{"1", albumID+""},
+                ORDER_BY_NAME);
+    }
+
     public static Uri getSongUri(long id){
         return ContentUris.withAppendedId(SONG_URI, id);
     }

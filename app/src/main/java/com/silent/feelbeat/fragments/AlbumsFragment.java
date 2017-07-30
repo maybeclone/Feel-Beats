@@ -31,6 +31,7 @@ public class AlbumsFragment extends Fragment implements LoaderManager.LoaderCall
 
     private RecyclerView recyclerView;
     private AlbumAdapter adapter;
+    private CallbackAlbumsFragment callback;
 
     public static AlbumsFragment newInstance(String title){
         AlbumsFragment albumsFragment = new AlbumsFragment();
@@ -43,8 +44,11 @@ public class AlbumsFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        adapter = new AlbumAdapter(context, null);
         getLoaderManager().initLoader(LOADER_ID, null, this);
+        if(context instanceof CallbackAlbumsFragment){
+            callback = (CallbackAlbumsFragment) context;
+        }
+        adapter = new AlbumAdapter(context, null, callback);
     }
 
     @Nullable
@@ -75,5 +79,9 @@ public class AlbumsFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         adapter.swapCursor(null);
+    }
+
+    public interface CallbackAlbumsFragment{
+        void onItemClick(long id, String title, String info);
     }
 }

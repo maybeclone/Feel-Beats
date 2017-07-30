@@ -14,7 +14,9 @@ public class Album extends Item {
     * */
     public String key;
     public String art;
+    public int year;
     public int numOfSongs;
+    public String artist;
 
     public Album(){
         super();
@@ -28,5 +30,14 @@ public class Album extends Item {
         this.key = key;
         this.numOfSongs = numOfSongs;
         this.art = art;
+    }
+
+    public Album(long id, String title, String key, String art, int year, int numOfSongs, String artist) {
+        super(id, title);
+        this.key = key;
+        this.art = art;
+        this.year = year;
+        this.numOfSongs = numOfSongs;
+        this.artist = artist;
     }
 }

@@ -21,7 +21,9 @@ import com.silent.feelbeat.R;
 import com.silent.feelbeat.callback.CallbackControl;
 import com.silent.feelbeat.callback.CallbackService;
 import com.silent.feelbeat.dataloaders.SongsLoader;
+import com.silent.feelbeat.fragments.AlbumsFragment;
 import com.silent.feelbeat.fragments.ArtistsFragment;
+import com.silent.feelbeat.fragments.DetailAlbumFragment;
 import com.silent.feelbeat.fragments.DetailArtistFragment;
 import com.silent.feelbeat.fragments.ListFragment;
 import com.silent.feelbeat.fragments.QuickControlFragment;
@@ -30,11 +32,13 @@ import com.silent.feelbeat.musicplayer.IPlayMusic;
 import com.silent.feelbeat.service.PlayingService;
 
 
-public class MainActivity extends AppCompatActivity implements CallbackService, CallbackControl, ArtistsFragment.CallbackArtistFragment {
+public class MainActivity extends AppCompatActivity implements CallbackService, CallbackControl,
+                                                    ArtistsFragment.CallbackArtistFragment, AlbumsFragment.CallbackAlbumsFragment {
 
 
     private QuickControlFragment controlFragment;
     private DetailArtistFragment detailArtistFragment;
+    private DetailAlbumFragment detailAlbumFragment;
     private ListFragment listFragment;
 
     // Connect Service
@@ -156,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
         if (cursor == null) {
             return;
         }
-        if(oldCursor == cursor){
+        if(cursor.equals(oldCursor)){
             Log.d("Play Music", "Old Cursor");
             Message message = Message.obtain(null, IPlayMusic.PLAY_NEW, position, 0);
             try {
@@ -176,7 +180,8 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
             } else {
                 Bundle bundle = new Bundle();
                 bundle.putParcelableArrayList(PlayingService.EXTRA_LIST, SongsLoader.getList(cursor));
-                Message message = Message.obtain(null, IPlayMusic.PLAY_NEW, position, 0);
+                Message message = Message.obtain(null, IPlayMusic.PLAY_NEW_LIST, position, 0);
+                message.setData(bundle);
                 try {
                     messenger.send(message);
                 } catch (RemoteException e) {
@@ -260,6 +265,25 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragmentMainContent, detailArtistFragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onItemClick(long id, String title, String info) {
+        if(detailAlbumFragment == null){
+            detailAlbumFragment = DetailAlbumFragment.newInstance(id, title, info);
+        } else {
+            Bundle args = detailAlbumFragment.getArguments();
+            args.putLong(DetailAlbumFragment.EXTRA_ALBUMID, id);
+            args.putString(DetailAlbumFragment.EXTRA_TITLE, title);
+            args.putString(DetailAlbumFragment.EXTRA_INFO, info);
+            detailAlbumFragment.setArguments(args);
+        }
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentMainContent, detailAlbumFragment)
                 .addToBackStack(null)
                 .commit();
     }

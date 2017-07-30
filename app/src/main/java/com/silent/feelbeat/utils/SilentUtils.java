@@ -1,5 +1,6 @@
 package com.silent.feelbeat.utils;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 
@@ -21,16 +22,16 @@ public class SilentUtils {
         return temp;
     }
 
-    public static final String getStringTimeFromDuration(long miliseconds){
+    public static final String getStringTimeFromDuration(Context context, long miliseconds){
         int hours = (int) TimeUnit.MILLISECONDS.toHours(miliseconds);
         int minutes = (int) TimeUnit.MILLISECONDS.toMinutes(miliseconds) - hours*60;
         int seconds = (int) TimeUnit.MILLISECONDS.toSeconds(miliseconds) - minutes*60;
         if(hours == 0){
-            return String.format(Resources.getSystem().getString(R.string.format_time_song_1),
-                    miliseconds, seconds);
+            return String.format(context.getString(R.string.format_time_song_1),
+                    minutes, seconds);
         }
         return String.format(Resources.getSystem().getString(R.string.format_time_song_2),
-                hours, miliseconds, seconds);
+                hours, minutes, seconds);
     }
 
 

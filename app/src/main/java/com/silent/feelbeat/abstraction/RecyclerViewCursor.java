@@ -15,8 +15,8 @@ import java.util.List;
 
 public abstract class RecyclerViewCursor<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
-    private Context mContext;
-    private Cursor mCursor;
+    protected Context mContext;
+    protected Cursor mCursor;
     private boolean mDataVaild;
     private int mRowIdColum;
     private DataSetObserver mDataSetObserver;
@@ -27,10 +27,10 @@ public abstract class RecyclerViewCursor<VH extends RecyclerView.ViewHolder> ext
         this.mCursor = cursor;
         mDataVaild = (cursor != null);
         mRowIdColum = mDataVaild ? mCursor.getColumnIndex("_id") : -1;
-        mDataSetObserver = new NotifyingDataSetObserver();
-        if(mCursor != null){
-            mCursor.registerDataSetObserver(mDataSetObserver);
-        }
+//        mDataSetObserver = new NotifyingDataSetObserver();
+//        if(mCursor != null){
+//            mCursor.registerDataSetObserver(mDataSetObserver);
+//        }
     }
 
     public Cursor getCursor(){
@@ -84,14 +84,14 @@ public abstract class RecyclerViewCursor<VH extends RecyclerView.ViewHolder> ext
             return null;
         }
         final Cursor oldCursor = mCursor;
-        if(oldCursor != null && mDataSetObserver != null){
-            oldCursor.unregisterDataSetObserver(mDataSetObserver);
-        }
+//        if(oldCursor != null && mDataSetObserver != null){
+//            oldCursor.unregisterDataSetObserver(mDataSetObserver);
+//        }
         mCursor = newCursor;
         if(mCursor != null){
-            if(mDataSetObserver != null){
-                mCursor.registerDataSetObserver(mDataSetObserver);
-            }
+//            if(mDataSetObserver != null){
+//                mCursor.registerDataSetObserver(mDataSetObserver);
+//            }
             mRowIdColum = newCursor.getColumnIndexOrThrow("_id");
             mDataVaild = true;
             notifyDataSetChanged();
@@ -103,22 +103,19 @@ public abstract class RecyclerViewCursor<VH extends RecyclerView.ViewHolder> ext
         return oldCursor;
     }
 
-    private class NotifyingDataSetObserver extends DataSetObserver{
-        @Override
-        public void onChanged() {
-            super.onChanged();
-            mDataVaild = true;
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public void onInvalidated() {
-            super.onInvalidated();
-            mDataVaild = false;
-            notifyDataSetChanged();
-        }
-    }
-
-
-
+//    private class NotifyingDataSetObserver extends DataSetObserver{
+//        @Override
+//        public void onChanged() {
+//            super.onChanged();
+//            mDataVaild = true;
+//            notifyDataSetChanged();
+//        }
+//
+//        @Override
+//        public void onInvalidated() {
+//            super.onInvalidated();
+//            mDataVaild = false;
+//            notifyDataSetChanged();
+//        }
+//    }
 }

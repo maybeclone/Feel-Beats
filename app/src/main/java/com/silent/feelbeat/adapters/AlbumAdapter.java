@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.silent.feelbeat.R;
 import com.silent.feelbeat.abstraction.RecyclerViewCursor;
 import com.silent.feelbeat.dataloaders.AlbumsLoader;
+import com.silent.feelbeat.fragments.AlbumsFragment;
 import com.silent.feelbeat.models.Album;
 import com.silent.feelbeat.utils.ColorUtils;
 import com.silent.feelbeat.utils.SilentUtils;
@@ -30,15 +31,26 @@ import com.squareup.picasso.Picasso;
 
 public class AlbumAdapter extends RecyclerViewCursor<AlbumAdapter.AlbumHolder> {
 
+    private AlbumsFragment.CallbackAlbumsFragment callback;
 
-    public AlbumAdapter(Context context, Cursor cursor){
+    public AlbumAdapter(Context context, Cursor cursor, AlbumsFragment.CallbackAlbumsFragment callback){
         super(context, cursor);
+        this.callback = callback;
     }
 
     @Override
-    public AlbumHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public AlbumHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_albums_list, parent, false);
-        AlbumHolder albumHolder = new AlbumHolder(view);
+        final AlbumHolder albumHolder = new AlbumHolder(view);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCursor.moveToPosition(albumHolder.getAdapterPosition());
+                callback.onItemClick(mCursor.getLong(0),
+                        mCursor.getString(1),
+                        String.format(parent.getContext().getString(R.string.format_time_detail_album), mCursor.getInt(4), mCursor.getInt(5)));
+            }
+        });
         return albumHolder;
     }
 
@@ -97,12 +109,12 @@ public class AlbumAdapter extends RecyclerViewCursor<AlbumAdapter.AlbumHolder> {
                                     cursor.getInt(4)));
     }
 
-    static class AlbumHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+
+    static class AlbumHolder extends RecyclerView.ViewHolder {
 
         public ImageView albumArt;
         public TextView numOfSong, albumTitle;
         public LinearLayout background;
-
 
         public AlbumHolder(View itemView) {
             super(itemView);
@@ -110,13 +122,8 @@ public class AlbumAdapter extends RecyclerViewCursor<AlbumAdapter.AlbumHolder> {
             numOfSong = (TextView) itemView.findViewById(R.id.numOfSong);
             albumTitle = (TextView) itemView.findViewById(R.id.albumTitle);
             background = (LinearLayout) itemView.findViewById(R.id.linearLayout);
-            itemView.setOnClickListener(this);
         }
 
-        @Override
-        public void onClick(View v) {
-
-        }
     }
 
 

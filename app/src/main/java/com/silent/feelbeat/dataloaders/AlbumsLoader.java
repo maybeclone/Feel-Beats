@@ -19,15 +19,17 @@ import java.util.List;
  * Created by silent on 7/11/2017.
  */
 
-public class AlbumsLoader extends LoaderDB{
+public class AlbumsLoader extends LoaderDB {
 
     public static final String PROJECTION[] = {MediaStore.Audio.Albums._ID,
-                                        MediaStore.Audio.Albums.ALBUM,
-                                        MediaStore.Audio.Albums.ALBUM_KEY,
-                                        MediaStore.Audio.Albums.ALBUM_ART,
-                                        MediaStore.Audio.Albums.NUMBER_OF_SONGS};
+            MediaStore.Audio.Albums.ALBUM,
+            MediaStore.Audio.Albums.ALBUM_KEY,
+            MediaStore.Audio.Albums.ALBUM_ART,
+            MediaStore.Audio.Albums.NUMBER_OF_SONGS,
+            MediaStore.Audio.Albums.FIRST_YEAR,
+            MediaStore.Audio.Albums.ARTIST};
 
-    public AlbumsLoader(){
+    public AlbumsLoader() {
 
     }
 
@@ -35,7 +37,7 @@ public class AlbumsLoader extends LoaderDB{
         super(contentResolver);
     }
 
-    public static Uri getUriAlbumArt(long albumId){
+    public static Uri getUriAlbumArt(long albumId) {
         return ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), albumId);
     }
 
@@ -47,16 +49,18 @@ public class AlbumsLoader extends LoaderDB{
     @Override
     public List<Item> getList() {
         Cursor cursor = contentResolver.query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, PROJECTION, null, null, null);
-        if(cursor==null){
+        if (cursor == null) {
             return null;
         }
         List<Item> listAlbum = new ArrayList<>();
-        while(cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             listAlbum.add(new Album(cursor.getLong(0),
                     cursor.getString(1),
                     cursor.getString(2),
                     cursor.getString(3),
-                    cursor.getInt(4)));
+                    cursor.getInt(4),
+                    cursor.getInt(5),
+                    cursor.getString(6)));
         }
         cursor.close();
         return listAlbum;
@@ -65,10 +69,12 @@ public class AlbumsLoader extends LoaderDB{
     @Override
     public CursorLoader getCursorLoader(Context context) {
         return new CursorLoader(context,
-                                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                                PROJECTION,
-                                null,
-                                null,
-                                null);
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                PROJECTION,
+                null,
+                null,
+                null);
     }
+
+
 }
