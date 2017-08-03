@@ -22,19 +22,19 @@ import java.util.List;
 public class SongsLoader extends LoaderDB {
 
     public final static String PROJECTION[] = {MediaStore.Audio.Media._ID,
-                                               MediaStore.Audio.Media.TITLE,
-                                               MediaStore.Audio.Media.ARTIST,
-                                               MediaStore.Audio.Media.COMPOSER,
-                                               MediaStore.Audio.Media.DURATION,
-                                               MediaStore.Audio.Media.ALBUM,
-                                               MediaStore.Audio.Media.IS_MUSIC,
-                                               MediaStore.Audio.Media.ALBUM_ID,
-                                               MediaStore.Audio.Media.ARTIST_ID};
+            MediaStore.Audio.Media.TITLE,
+            MediaStore.Audio.Media.ARTIST,
+            MediaStore.Audio.Media.COMPOSER,
+            MediaStore.Audio.Media.DURATION,
+            MediaStore.Audio.Media.ALBUM,
+            MediaStore.Audio.Media.IS_MUSIC,
+            MediaStore.Audio.Media.ALBUM_ID,
+            MediaStore.Audio.Media.ARTIST_ID};
 
     public final static Uri SONG_URI = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-    public final static String ORDER_BY_NAME = PROJECTION[1]+" COLLATE LOCALIZED ASC";
+    public final static String ORDER_BY_NAME = PROJECTION[1] + " COLLATE LOCALIZED ASC";
 
-    public SongsLoader(){
+    public SongsLoader() {
 
     }
 
@@ -46,31 +46,31 @@ public class SongsLoader extends LoaderDB {
 
     @Override
     public Cursor getCursor() {
-        if(contentResolver == null){
+        if (contentResolver == null) {
             return null;
         }
         return contentResolver.query(SONG_URI, PROJECTION, PROJECTION[6] + "= ?", new String[]{"1"}, ORDER_BY_NAME);
     }
 
-    public Cursor getCursor(long artistID){
-        if(contentResolver == null){
+    public Cursor getCursor(long artistID) {
+        if (contentResolver == null) {
             return null;
         }
-        return contentResolver.query(SONG_URI, PROJECTION, PROJECTION[6] + "= ? AND "+PROJECTION[8]+" = ?",
-                new String[]{"1", artistID+""}, ORDER_BY_NAME);
+        return contentResolver.query(SONG_URI, PROJECTION, PROJECTION[6] + "= ? AND " + PROJECTION[8] + " = ?",
+                new String[]{"1", artistID + ""}, ORDER_BY_NAME);
     }
 
     @Override
     public List<Item> getList() {
-        if(contentResolver == null){
+        if (contentResolver == null) {
             return null;
         }
         Cursor cursor = contentResolver.query(SONG_URI, PROJECTION, null, null, ORDER_BY_NAME);
-        if(cursor==null){
+        if (cursor == null) {
             return null;
         }
         List<Item> listSong = new ArrayList<>();
-        while(cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             Song song = new Song(cursor.getLong(0),
                     cursor.getString(1),
                     cursor.getInt(4),
@@ -87,11 +87,37 @@ public class SongsLoader extends LoaderDB {
     @Override
     public CursorLoader getCursorLoader(Context context) {
         return new CursorLoader(context,
-                                SONG_URI,
-                                PROJECTION,
-                                PROJECTION[6] + " = ?",
-                                new String[]{"1"},
-                                ORDER_BY_NAME);
+                SONG_URI,
+                PROJECTION,
+                PROJECTION[6] + " = ?",
+                new String[]{"1"},
+                ORDER_BY_NAME);
+    }
+
+    public ArrayList<Song> getList(String title, int limit) {
+        Cursor cursor = contentResolver.query(SONG_URI,
+                PROJECTION,
+                PROJECTION[6] + " = ? AND " + PROJECTION[1] + " LIKE ?",
+                new String[]{"1", title+"%"},
+                ORDER_BY_NAME);
+
+        if (cursor == null) {
+            return null;
+        }
+
+        ArrayList<Song> items = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            Song song = new Song(cursor.getLong(0),
+                    cursor.getString(1),
+                    cursor.getInt(4),
+                    cursor.getString(2),
+                    cursor.getString(3),
+                    cursor.getString(5),
+                    cursor.getLong(7));
+            items.add(song);
+        }
+        cursor.close();
+        return items.size()<=limit ? items : (ArrayList<Song>) items.subList(0, limit);
     }
 
     public CursorLoader getCursorLoader(Context context, long artistID) {
@@ -99,7 +125,16 @@ public class SongsLoader extends LoaderDB {
                 SONG_URI,
                 PROJECTION,
                 PROJECTION[6] + " = ? AND " + PROJECTION[8] + " = ? ",
-                new String[]{"1", artistID+""},
+                new String[]{"1", artistID + ""},
+                ORDER_BY_NAME);
+    }
+
+    public CursorLoader getCursorLoader(Context context, String name) {
+        return new CursorLoader(context,
+                SONG_URI,
+                PROJECTION,
+                PROJECTION[6] + " = ? AND " + PROJECTION[1] + " = ? ",
+                new String[]{"1", name + ""},
                 ORDER_BY_NAME);
     }
 
@@ -108,19 +143,19 @@ public class SongsLoader extends LoaderDB {
                 SONG_URI,
                 PROJECTION,
                 PROJECTION[6] + " = ? AND " + PROJECTION[7] + " = ? ",
-                new String[]{"1", albumID+""},
+                new String[]{"1", albumID + ""},
                 ORDER_BY_NAME);
     }
 
-    public static Uri getSongUri(long id){
+    public static Uri getSongUri(long id) {
         return ContentUris.withAppendedId(SONG_URI, id);
     }
 
-    public static ArrayList<Song> getList(Cursor cursor){
+    public static ArrayList<Song> getList(Cursor cursor) {
         ArrayList<Song> listSong = new ArrayList<>();
         int now = cursor.getPosition();
         cursor.moveToPosition(-1);
-        while(cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             Song song = new Song(cursor.getLong(0),
                     cursor.getString(1),
                     cursor.getInt(4),
@@ -133,4 +168,5 @@ public class SongsLoader extends LoaderDB {
         cursor.moveToPosition(now);
         return listSong;
     }
+
 }

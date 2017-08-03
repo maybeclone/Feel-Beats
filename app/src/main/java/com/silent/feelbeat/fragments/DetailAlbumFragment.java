@@ -1,7 +1,6 @@
 package com.silent.feelbeat.fragments;
 
 import android.content.Context;
-import android.content.CursorLoader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -98,6 +97,15 @@ public class DetailAlbumFragment extends Fragment implements LoaderManager.Loade
                     .load(AlbumsLoader.getUriAlbumArt(args.getLong(EXTRA_ALBUMID)))
                     .into(backgound);
         }
+
+        toolbar.setTitle("Albums");
+        toolbar.setNavigationIcon(R.mipmap.ic_launcher_round);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
     }
 
     @Override
@@ -118,6 +126,6 @@ public class DetailAlbumFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        callback.playMusic(position, adapter.getCursor());
+        callback.playMusic(position, SongsLoader.getList( adapter.getCursor()));
     }
 }

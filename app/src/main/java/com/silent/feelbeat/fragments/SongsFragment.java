@@ -110,7 +110,7 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        callBackService.playMusic(adapter.getRealPosition(position), adapter.getCursor());
+        callBackService.playMusic(adapter.getRealPosition(position), SongsLoader.getList(adapter.getCursor()));
     }
 
     public SongListAdapter getAdapter(){

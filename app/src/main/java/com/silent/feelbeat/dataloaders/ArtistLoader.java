@@ -9,6 +9,7 @@ import android.support.v4.content.CursorLoader;
 import com.silent.feelbeat.abstraction.Item;
 import com.silent.feelbeat.abstraction.LoaderDB;
 import com.silent.feelbeat.models.Artist;
+import com.silent.feelbeat.models.Song;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +20,13 @@ import java.util.List;
 
 public class ArtistLoader extends LoaderDB {
 
-    public static final String PROJECT[] = {MediaStore.Audio.Artists._ID,
+    public static final String PROJECTION[] = {MediaStore.Audio.Artists._ID,
                                             MediaStore.Audio.Artists.ARTIST,
                                             MediaStore.Audio.Artists.ARTIST_KEY,
                                             MediaStore.Audio.Artists.NUMBER_OF_ALBUMS,
                                             MediaStore.Audio.Artists.NUMBER_OF_TRACKS};
+
+    public final static String ORDER_BY_NAME = PROJECTION[1]+" COLLATE LOCALIZED ASC";
 
     public ArtistLoader(){
 
@@ -38,7 +41,7 @@ public class ArtistLoader extends LoaderDB {
         if(contentResolver == null){
             return null;
         }
-        return contentResolver.query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, PROJECT, null, null, null);
+        return contentResolver.query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, PROJECTION, null, null, ORDER_BY_NAME);
     }
 
     @Override
@@ -46,7 +49,7 @@ public class ArtistLoader extends LoaderDB {
         if(contentResolver == null){
             return null;
         }
-        Cursor cursor = contentResolver.query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, PROJECT, null, null, null);
+        Cursor cursor = contentResolver.query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, PROJECTION, null, null, null);
         List<Item> artists = new ArrayList<>();
         while(cursor.moveToNext()){
             artists.add(new Artist(cursor.getLong(0),
@@ -62,9 +65,42 @@ public class ArtistLoader extends LoaderDB {
     @Override
     public CursorLoader getCursorLoader(Context context) {
         return new CursorLoader(context,
-                    MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, PROJECT,
+                    MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, PROJECTION,
                     null,
                     null,
                     null);
+    }
+
+    public ArrayList<Artist> getList(String title, int limit) {
+        Cursor cursor = contentResolver.query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
+                PROJECTION,
+                PROJECTION[1] + " LIKE ?",
+                new String[]{title+"%"},
+                ORDER_BY_NAME);
+
+        if (cursor == null) {
+            return null;
+        }
+
+        ArrayList<Artist> items = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            Artist artist = new Artist(cursor.getLong(0),
+                            cursor.getString(1),
+                            cursor.getString(2),
+                            cursor.getInt(3),
+                            cursor.getInt(4));
+          items.add(artist);
+        }
+        cursor.close();
+        return  items.size()<=limit ? items : (ArrayList<Artist>) items.subList(0, limit);
+    }
+
+    public CursorLoader getCursorLoader(Context context, String artist) {
+        return new CursorLoader(context,
+                MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
+                PROJECTION,
+                PROJECTION[6] + " = ? AND " + PROJECTION[1] + " = ? ",
+                new String[]{"1", artist+""},
+                ORDER_BY_NAME);
     }
 }

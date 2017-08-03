@@ -108,6 +108,7 @@ public class QuickControlFragment extends Fragment implements View.OnClickListen
         artist.setText(song.artist);
         progressBar.setMax(song.getSeconds());
         progressBar.setProgress(0);
+        setActivePlay();
     }
 
     public void updateProgress(int second){

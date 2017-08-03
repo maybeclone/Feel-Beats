@@ -28,12 +28,7 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
     private MediaPlayer play;
     private int nowPlay;
     private Context context;
-    private boolean onStop = false;
-    private boolean sendReceiver = false;
-
-    public void setOnStop(boolean onStop) {
-        this.onStop = onStop;
-    }
+    private boolean uniqueHandler = false;
 
     public static MusicPlayer getInstance(Context context){
        if(musicPlayer==null){
@@ -77,20 +72,18 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
 
     @Override
     public void play(int position){
+        play.reset();
         Uri uri = SongsLoader.getSongUri(list.get(position).id);
         try {
-            Log.d("Uri", uri.toString());
             setNowPlay(position);
             play.setDataSource(context, uri);
             play.prepare();
-
             play.start();
             updateInfo(position);
-            if(!sendReceiver){
-                sendReceiver = true;
+            if(!uniqueHandler){
+                uniqueHandler = true;
                 handler.postDelayed(runnable, 1000);
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -124,8 +117,8 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
     @Override
     public void start() {
         play.start();
-        if(!sendReceiver){
-            sendReceiver = true;
+        if(!uniqueHandler){
+            uniqueHandler = true;
             handler.postDelayed(runnable, 1000);
         }
     }
@@ -159,19 +152,15 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            if(play.isPlaying() && !onStop){
+            if(play.isPlaying()){
                 Intent intent = new Intent(IPlayMusic.RECEVIER_PROCESS);
                 intent.putExtra(IPlayMusic.EXTRA_PLAYING_POSITION, play.getCurrentPosition()/1000);
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 handler.postDelayed(this, 1000);
             } else {
-                sendReceiver = false;
+                uniqueHandler = false;
             }
         }
     };
 
-    public void resendBroadcast() {
-        onStop = false;
-        handler.postDelayed(runnable, 0);
-    }
 }

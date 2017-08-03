@@ -13,12 +13,10 @@ public interface IPlayMusic {
     int START = 3;
     int NEXT = 4;
     int PREVIOUS = 5;
-    int PLAY_NEW = 6;
+    int UPDATE_INFO = 6;
     int SEEK_TO = 7;
     int PLAY_NEW_LIST = 8;
 
-    int ON_STOP = 100;
-    int ON_RESTART = 101;
 
     String RECEIVER_INFO = "com.silent.feelbeat.info";
     String RECEVIER_PROCESS = "com.silent.feelbeat.process";

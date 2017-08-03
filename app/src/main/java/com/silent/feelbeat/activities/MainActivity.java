@@ -1,16 +1,9 @@
 package com.silent.feelbeat.activities;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.database.Cursor;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -20,7 +13,7 @@ import android.util.Log;
 import com.silent.feelbeat.R;
 import com.silent.feelbeat.callback.CallbackControl;
 import com.silent.feelbeat.callback.CallbackService;
-import com.silent.feelbeat.dataloaders.SongsLoader;
+import com.silent.feelbeat.musicplayer.RemoteMusic;
 import com.silent.feelbeat.fragments.AlbumsFragment;
 import com.silent.feelbeat.fragments.ArtistsFragment;
 import com.silent.feelbeat.fragments.DetailAlbumFragment;
@@ -29,33 +22,20 @@ import com.silent.feelbeat.fragments.ListFragment;
 import com.silent.feelbeat.fragments.QuickControlFragment;
 import com.silent.feelbeat.models.Song;
 import com.silent.feelbeat.musicplayer.IPlayMusic;
-import com.silent.feelbeat.service.PlayingService;
+import com.silent.feelbeat.utils.NavigationUtils;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements CallbackService, CallbackControl,
                                                     ArtistsFragment.CallbackArtistFragment, AlbumsFragment.CallbackAlbumsFragment {
 
-
     private QuickControlFragment controlFragment;
     private DetailArtistFragment detailArtistFragment;
     private DetailAlbumFragment detailAlbumFragment;
     private ListFragment listFragment;
-
-    // Connect Service
-    private ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            messenger = new Messenger(service);
-            bound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            bound = false;
-        }
-    };
-    private Messenger messenger;
-    private boolean bound = false;
+    private RemoteMusic remoteMusic;
+    private boolean needUpdate = false;
 
     // Broacast Reciever
     BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -80,10 +60,22 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(IPlayMusic.RECEIVER_INFO);
-        filter.addAction(IPlayMusic.RECEVIER_PROCESS);
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
+
+        remoteMusic = RemoteMusic.getInstance();
+
+        if(getIntent()!=null){
+            if(getIntent().getAction().equals(NavigationUtils.NAVIGATION_TO_ALBUM)){
+                NavigationUtils.navigationToAlbum(this, getIntent(), detailAlbumFragment);
+                attachQuickControl(getSupportFragmentManager());
+                needUpdate = true;
+                return;
+            } else if(getIntent().getAction().equals(NavigationUtils.NAVIGATION_TO_ARTIST)){
+                NavigationUtils.navigationToArtist(this, getIntent(), detailArtistFragment);
+                attachQuickControl(getSupportFragmentManager());
+                needUpdate = true;
+                return;
+            }
+        }
 
         if (savedInstanceState == null) {
             attachQuickControl(getSupportFragmentManager());
@@ -92,48 +84,31 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        needUpdate = true;
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
+        remoteMusic.bindService(this);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(IPlayMusic.RECEIVER_INFO);
+        filter.addAction(IPlayMusic.RECEVIER_PROCESS);
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
+        if(needUpdate){
+            needUpdate = false;
+            remoteMusic.updateInfo();
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (bound) {
-            Message message = Message.obtain(null, IPlayMusic.ON_STOP, 0, 0);
-            try {
-                messenger.send(message);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        if (bound) {
-            Message message = Message.obtain(null, IPlayMusic.ON_RESTART, 0, 0);
-            try {
-                messenger.send(message);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+        remoteMusic.unbindService(this);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
-        if (bound) {
-            unbindService(connection);
-            bound = false;
-        }
-        Intent intent = new Intent(this, PlayingService.class);
-        stopService(intent);
     }
-
 
     private void attachQuickControl(FragmentManager fragmentManager) {
         if (controlFragment == null) {
@@ -153,102 +128,37 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
                 .commit();
     }
 
-    private Cursor oldCursor = null;
-
     @Override
-    public void playMusic(int position, Cursor cursor) {
-        if (cursor == null) {
-            return;
-        }
-        if(cursor.equals(oldCursor)){
-            Log.d("Play Music", "Old Cursor");
-            Message message = Message.obtain(null, IPlayMusic.PLAY_NEW, position, 0);
-            try {
-                messenger.send(message);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        } else {
-            oldCursor = cursor;
-            Log.d("Play Music", "New Cursor");
-            if(!bound) {
-                Intent intent = new Intent(this, PlayingService.class);
-                intent.putParcelableArrayListExtra(PlayingService.EXTRA_LIST, SongsLoader.getList(cursor));
-                intent.putExtra(PlayingService.EXTRA_POSITION, position);
-                startService(intent);
-                bindService(intent, connection, Context.BIND_AUTO_CREATE);
-            } else {
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList(PlayingService.EXTRA_LIST, SongsLoader.getList(cursor));
-                Message message = Message.obtain(null, IPlayMusic.PLAY_NEW_LIST, position, 0);
-                message.setData(bundle);
-                try {
-                    messenger.send(message);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+    public void playMusic(int position, ArrayList<Song> songs) {
+        remoteMusic.play(this, songs, position);
         controlFragment.setActivePlay();
     }
 
 
     @Override
     public void pause() {
-        Message message = Message.obtain(null, IPlayMusic.PAUSE, 0, 0);
-        try {
-            messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+      remoteMusic.pause();
     }
-
 
     // edit after
     @Override
     public void start() {
-        if (!bound) {
-            return;
-        }
-        Message message = Message.obtain(null, IPlayMusic.START, 0, 0);
-        try {
-            messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+       remoteMusic.start();
     }
 
     @Override
     public void seekTo(long position) {
-        if(!bound){
-            return;
-        }
-        Message message = Message.obtain(null, IPlayMusic.SEEK_TO, (int) position, 0);
-        try {
-            messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        remoteMusic.seekTo(position);
     }
 
     @Override
     public void next() {
-        Message message = Message.obtain(null, IPlayMusic.NEXT, 0, 0);
-        try {
-            messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        remoteMusic.next();
     }
 
     @Override
     public void previous() {
-        Message message = Message.obtain(null, IPlayMusic.PREVIOUS, 0, 0);
-        try {
-            messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        remoteMusic.previous();
     }
 
     @Override

@@ -48,13 +48,7 @@ public class PlayingService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        musicPlayer.setList(intent.<Song>getParcelableArrayListExtra(EXTRA_LIST));
-        Message message = Message.obtain(null, IPlayMusic.PLAY, intent.getIntExtra(EXTRA_POSITION, 0), 0);
-        try {
-            messenger.send(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+
         return START_STICKY;
     }
 
@@ -72,9 +66,6 @@ public class PlayingService extends Service {
                 case IPlayMusic.PLAY:
                     musicPlayer.play(msg.arg1);
                     break;
-                case IPlayMusic.PLAY_NEW:
-                    musicPlayer.playNew(msg.arg1);
-                    break;
                 case IPlayMusic.PAUSE:
                     musicPlayer.pause();
                     break;
@@ -90,16 +81,13 @@ public class PlayingService extends Service {
                 case IPlayMusic.SEEK_TO:
                     musicPlayer.seekTo(msg.arg1);
                     break;
-                case IPlayMusic.ON_STOP:
-                    musicPlayer.setOnStop(true);
-                    break;
-                case IPlayMusic.ON_RESTART:
-                    musicPlayer.resendBroadcast();
-                    break;
                 case IPlayMusic.PLAY_NEW_LIST:
                     Bundle bundle = msg.getData();
                     musicPlayer.setList(bundle.<Song>getParcelableArrayList(EXTRA_LIST));
-                    musicPlayer.playNew(msg.arg1);
+                    musicPlayer.play(msg.arg1);
+                    break;
+                case IPlayMusic.UPDATE_INFO:
+                    musicPlayer.updateInfo(musicPlayer.getNowPlay());
                     break;
                 default:
                     super.handleMessage(msg);

@@ -10,4 +10,15 @@
     <string name="format_time_song_1">%1$d:%2$d</string>
     <string name="format_time_song_2">%1$d:%2$d:%3$d</string>
     <string name="format_time_detail_album">%1$d songs - %2$d </string>
+
+    <!--main_menu_icon_title-->
+    <string name="item_search">Search</string>
+    <string name="item_sort">Sort By</string>
+    <string name="item_settings">Settings</string>
+    <string name="item_sort_az">A-Z</string>
+    <string name="item_sort_za">Z-A</string>
+
+    <!--search view-->
+    <string name="search_view_hint">Search songs, artists or albums</string>
+    <string name="search_nothing_found">NOTHING FOUND</string>
 </resources>
