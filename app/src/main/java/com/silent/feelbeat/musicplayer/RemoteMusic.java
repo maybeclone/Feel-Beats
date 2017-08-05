@@ -52,6 +52,7 @@ public class RemoteMusic {
     private RemoteMusic(){
     }
 
+
     public void bindService(Context context){
         Intent intent = new Intent(context, PlayingService.class);
         context.startService(intent);

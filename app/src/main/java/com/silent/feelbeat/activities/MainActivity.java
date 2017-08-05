@@ -1,11 +1,18 @@
 package com.silent.feelbeat.activities;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,12 +30,13 @@ import com.silent.feelbeat.fragments.QuickControlFragment;
 import com.silent.feelbeat.models.Song;
 import com.silent.feelbeat.musicplayer.IPlayMusic;
 import com.silent.feelbeat.utils.NavigationUtils;
+import com.silent.feelbeat.utils.PermissionUtil;
 
 import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements CallbackService, CallbackControl,
-                                                    ArtistsFragment.CallbackArtistFragment, AlbumsFragment.CallbackAlbumsFragment {
+        ArtistsFragment.CallbackArtistFragment, AlbumsFragment.CallbackAlbumsFragment {
 
     private QuickControlFragment controlFragment;
     private DetailArtistFragment detailArtistFragment;
@@ -37,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
     private RemoteMusic remoteMusic;
     private boolean needUpdate = false;
 
-    // Broacast Reciever
+    // Broadcast Receiver
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -50,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
             } else if (intent.getAction().equals(IPlayMusic.RECEVIER_PROCESS)) {
                 int second = intent.getIntExtra(IPlayMusic.EXTRA_PLAYING_POSITION, -1);
                 controlFragment.updateProgress(second);
-                Log.d("Receiver", second+"");
+                Log.d("Receiver", second + "");
             }
         }
     };
@@ -59,27 +67,55 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
         remoteMusic = RemoteMusic.getInstance();
-
-        if(getIntent()!=null){
-            if(getIntent().getAction().equals(NavigationUtils.NAVIGATION_TO_ALBUM)){
-                NavigationUtils.navigationToAlbum(this, getIntent(), detailAlbumFragment);
-                attachQuickControl(getSupportFragmentManager());
-                needUpdate = true;
-                return;
-            } else if(getIntent().getAction().equals(NavigationUtils.NAVIGATION_TO_ARTIST)){
-                NavigationUtils.navigationToArtist(this, getIntent(), detailArtistFragment);
-                attachQuickControl(getSupportFragmentManager());
-                needUpdate = true;
-                return;
+        if (PermissionUtil.checkAskPermissionRequired()) {
+            if (ActivityCompat.checkSelfPermission(this, PermissionUtil.PERMISSION[0]) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, PermissionUtil.PERMISSION[0])) {
+                    PermissionUtil.showExplain(this);
+                } else {
+                    PermissionUtil.requestPermission(this, PermissionUtil.REQUEST_CODE_PERMISSION);
+                }
+            } else {
+                if (savedInstanceState == null) {
+                    permissionAccepted();
+                }
             }
         }
 
         if (savedInstanceState == null) {
             attachQuickControl(getSupportFragmentManager());
-            attachMainContent(getSupportFragmentManager());
+        }
+    }
+
+    private void permissionAccepted() {
+        if (getIntent() != null) {
+            if (getIntent().getAction().equals(NavigationUtils.NAVIGATION_TO_ALBUM)) {
+                NavigationUtils.navigationToAlbum(this, getIntent(), detailAlbumFragment);
+                attachQuickControl(getSupportFragmentManager());
+                needUpdate = true;
+                return;
+            } else if (getIntent().getAction().equals(NavigationUtils.NAVIGATION_TO_ARTIST)) {
+                NavigationUtils.navigationToArtist(this, getIntent(), detailArtistFragment);
+                attachQuickControl(getSupportFragmentManager());
+                needUpdate = true;
+                return;
+            } else {
+                attachMainContent(getSupportFragmentManager());
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PermissionUtil.REQUEST_CODE_PERMISSION:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    permissionAccepted();
+                } else {
+                    PermissionUtil.showExplain(this);
+                }
+                break;
         }
     }
 
@@ -97,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
         filter.addAction(IPlayMusic.RECEIVER_INFO);
         filter.addAction(IPlayMusic.RECEVIER_PROCESS);
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
-        if(needUpdate){
+        if (needUpdate) {
             needUpdate = false;
             remoteMusic.updateInfo();
         }
@@ -137,35 +173,55 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
 
     @Override
     public void pause() {
-      remoteMusic.pause();
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
+            PermissionUtil.showExplain(this);
+            return;
+        }
+        remoteMusic.pause();
     }
 
     // edit after
     @Override
     public void start() {
-       remoteMusic.start();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            PermissionUtil.showExplain(this);
+            return;
+        }
+        remoteMusic.start();
     }
 
     @Override
     public void seekTo(long position) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            PermissionUtil.showExplain(this);
+            return;
+        }
         remoteMusic.seekTo(position);
     }
 
     @Override
     public void next() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            PermissionUtil.showExplain(this);
+            return;
+        }
         remoteMusic.next();
     }
 
     @Override
     public void previous() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            PermissionUtil.showExplain(this);
+            return;
+        }
         remoteMusic.previous();
     }
 
     @Override
     public void onItemClick(long artistID, String artist) {
-        if(detailArtistFragment == null){
+        if (detailArtistFragment == null) {
             detailArtistFragment = DetailArtistFragment.newInstance(artistID, artist);
-        } else{
+        } else {
             Bundle args = detailArtistFragment.getArguments();
             args.putLong(DetailArtistFragment.EXTRA_ARTIST_ID, artistID);
             args.putString(DetailArtistFragment.EXTRA_ARTIST, artist);
@@ -181,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
 
     @Override
     public void onItemClick(long id, String title, String info) {
-        if(detailAlbumFragment == null){
+        if (detailAlbumFragment == null) {
             detailAlbumFragment = DetailAlbumFragment.newInstance(id, title, info);
         } else {
             Bundle args = detailAlbumFragment.getArguments();
