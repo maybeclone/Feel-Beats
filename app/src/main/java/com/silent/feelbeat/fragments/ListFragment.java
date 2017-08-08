@@ -44,8 +44,6 @@ public class ListFragment extends Fragment implements Toolbar.OnMenuItemClickLis
     private List<Fragment> list;
     private TabAdapter adapter;
 
-
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -54,6 +52,14 @@ public class ListFragment extends Fragment implements Toolbar.OnMenuItemClickLis
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        list = new ArrayList<>();
+        if(savedInstanceState==null) {
+            list.add(ArtistsFragment.newInstance("Artists", true));
+            list.add(SongsFragment.newInstance("Songs", true));
+            list.add(AlbumsFragment.newInstance("Albums", true));
+            list.add(PlaylistFragment.newInstance("Playlist"));
+        }
+        adapter = new TabAdapter(getChildFragmentManager(), list);
     }
 
     @Nullable
@@ -73,14 +79,8 @@ public class ListFragment extends Fragment implements Toolbar.OnMenuItemClickLis
 
         // get from Preference
 
-        list = new ArrayList<>();
-        list.add(ArtistsFragment.newInstance("Artists", true));
-        list.add(SongsFragment.newInstance("Songs", true));
-        list.add(AlbumsFragment.newInstance("Albums", true));
-        list.add(PlaylistFragment.newInstance("Playlist"));
-
         tabLayout.setupWithViewPager(viewPager);
-        adapter = new TabAdapter(getChildFragmentManager(), list);
+
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(1);
 
@@ -121,6 +121,7 @@ public class ListFragment extends Fragment implements Toolbar.OnMenuItemClickLis
                 break;
             case R.id.settings:
                 Log.d("Menu Item", "Settings");
+
                 break;
         }
         return true;

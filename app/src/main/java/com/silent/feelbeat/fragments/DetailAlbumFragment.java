@@ -34,6 +34,7 @@ public class DetailAlbumFragment extends Fragment implements LoaderManager.Loade
     public final static String EXTRA_ALBUMID = "albumid";
     public final static String EXTRA_TITLE  = "title";
     public final static String EXTRA_INFO = "info";
+    public final static String EXTRA_ARTIST = "artist";
 
     private TextView title, info;
     private ImageView backgound;
@@ -44,10 +45,11 @@ public class DetailAlbumFragment extends Fragment implements LoaderManager.Loade
 
     private final static int LOADER_ID = 1;
 
-    public static DetailAlbumFragment newInstance(long albumID, String title, String info){
+    public static DetailAlbumFragment newInstance(long albumID, String artist, String title, String info){
         DetailAlbumFragment detailAlbumFragment = new DetailAlbumFragment();
         Bundle bundle = new Bundle();
         bundle.putLong(EXTRA_ALBUMID, albumID);
+        bundle.putString(EXTRA_ARTIST, artist);
         bundle.putString(EXTRA_TITLE, title);
         bundle.putString(EXTRA_INFO, info);
         detailAlbumFragment.setArguments(bundle);
@@ -96,10 +98,10 @@ public class DetailAlbumFragment extends Fragment implements LoaderManager.Loade
             Picasso.with(getContext())
                     .load(AlbumsLoader.getUriAlbumArt(args.getLong(EXTRA_ALBUMID)))
                     .into(backgound);
+            toolbar.setTitle(args.getString(EXTRA_ARTIST));
         }
 
-        toolbar.setTitle("Albums");
-        toolbar.setNavigationIcon(R.mipmap.ic_launcher_round);
+        toolbar.setNavigationIcon(R.drawable.ic_back);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

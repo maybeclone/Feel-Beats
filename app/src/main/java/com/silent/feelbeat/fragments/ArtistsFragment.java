@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,7 @@ import com.silent.feelbeat.utils.SilentUtils;
  * Created by silent on 7/17/2017.
  */
 
-public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener{
+public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
     private static final int LOADER_ID = 0x00001;
 
@@ -31,7 +32,7 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
     private ArtistAdapter adapter;
     private CallbackArtistFragment callback;
 
-    public static ArtistsFragment newInstance(String title, boolean az){
+    public static ArtistsFragment newInstance(String title, boolean az) {
         ArtistsFragment artistsFragment = new ArtistsFragment();
         Bundle bundle = new Bundle();
         bundle.putString(SilentUtils.TITLE_FRAGMENT, title);
@@ -43,19 +44,50 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if(context instanceof CallbackArtistFragment){
+        Log.d("Artist Fragment", "onAttach");
+        if (context instanceof CallbackArtistFragment) {
             callback = (CallbackArtistFragment) context;
         } else {
             throw new ClassCastException(" must be implemented CallbackArtistFragment");
         }
         adapter = new ArtistAdapter(context, null, 0, getArguments().getBoolean(SilentUtils.EXTRA_ORDER));
-        getLoaderManager().initLoader(LOADER_ID, null, this);
+    }
+
+    public ArtistsFragment() {
+        Log.d("Artist Fragment", "constructor");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d("Fragment", "onDestroyView");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("Fragment", "onDestroy");
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d("Fragment", "onCreateView");
         return inflater.inflate(R.layout.fragment_listview, container, false);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d("Fragment", "onStart");
+        getLoaderManager().initLoader(LOADER_ID, getArguments(), this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d("Fragment", "onStop");
+        getLoaderManager().destroyLoader(LOADER_ID);
     }
 
     @Override
@@ -69,8 +101,9 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        CursorLoader cursorLoader = new ArtistLoader().getCursorLoader(getActivity(), getArguments().getBoolean(SilentUtils.EXTRA_ORDER));
-        return  cursorLoader;
+        Log.d("onCreateLoader", args.getBoolean(SilentUtils.EXTRA_ORDER) + "");
+        CursorLoader cursorLoader = new ArtistLoader().getCursorLoader(getActivity(), args.getBoolean(SilentUtils.EXTRA_ORDER));
+        return cursorLoader;
     }
 
     @Override
@@ -91,12 +124,14 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     public void reloadData(boolean az) {
-        boolean def = getArguments().getBoolean(SilentUtils.EXTRA_ORDER);
-        if(az == def){
+        Bundle args = getArguments();
+        boolean def = args.getBoolean(SilentUtils.EXTRA_ORDER);
+        if (az == def) {
             return;
         }
-        getArguments().putBoolean(SilentUtils.EXTRA_ORDER, az);
+        args.putBoolean(SilentUtils.EXTRA_ORDER, az);
         getLoaderManager().restartLoader(LOADER_ID, getArguments(), this);
+
     }
 
     public interface CallbackArtistFragment {

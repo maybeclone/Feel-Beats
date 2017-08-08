@@ -140,6 +140,7 @@ public class SearchableActivity extends AppCompatActivity implements SearchView.
             Intent intent = new Intent(SearchableActivity.this, MainActivity.class);
             intent.setAction(NavigationUtils.NAVIGATION_TO_ALBUM);
             intent.putExtra(DetailAlbumFragment.EXTRA_ALBUMID, album.id);
+            intent.putExtra(DetailAlbumFragment.EXTRA_ARTIST, album.artist);
             intent.putExtra(DetailAlbumFragment.EXTRA_TITLE, album.title);
             intent.putExtra(DetailAlbumFragment.EXTRA_INFO, String.format(getString(R.string.format_time_detail_album), album.numOfSongs, album.year));
             startActivity(intent);

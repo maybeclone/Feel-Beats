@@ -48,6 +48,7 @@ public class AlbumAdapter extends RecyclerViewCursor<AlbumAdapter.AlbumHolder> {
             public void onClick(View v) {
                 mCursor.moveToPosition(albumHolder.getAdapterPosition());
                 callback.onItemClick(mCursor.getLong(0),
+                        mCursor.getString(mCursor.getColumnIndex(MediaStore.Audio.Albums.ARTIST)),
                         mCursor.getString(1),
                         String.format(parent.getContext().getString(R.string.format_time_detail_album),
                                 mCursor.getInt(mCursor.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS)),

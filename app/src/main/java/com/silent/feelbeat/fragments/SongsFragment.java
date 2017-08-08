@@ -47,6 +47,8 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
     // Communicate Activity
     private CallbackService callBackService;
 
+    private boolean onAttach;
+
     public static SongsFragment newInstance(String title, boolean az) {
         SongsFragment songsFragment = new SongsFragment();
         Bundle bundle = new Bundle();
@@ -65,12 +67,30 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
         } else {
             throw new ClassCastException("Must implement CallBackService to handle communication with activity");
         }
+        onAttach = true;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        onAttach = false;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         getLoaderManager().initLoader(LOADER_ID, getArguments(), this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        getLoaderManager().destroyLoader(LOADER_ID);
     }
 
     @Nullable
@@ -96,11 +116,6 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         adapter.setAZ(getArguments().getBoolean(SilentUtils.EXTRA_ORDER));
         adapter.swapCursor(data);
@@ -116,13 +131,13 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
         callBackService.playMusic(adapter.getRealPosition(position), SongsLoader.getList(adapter.getCursor()));
     }
 
-    public SongListAdapter getAdapter(){
+    public SongListAdapter getAdapter() {
         return this.adapter;
     }
 
-    public void reloadData(boolean az){
+    public void reloadData(boolean az) {
         boolean def = getArguments().getBoolean(SilentUtils.EXTRA_ORDER);
-        if(az == def){
+        if (az == def) {
             return;
         }
         getArguments().putBoolean(SilentUtils.EXTRA_ORDER, az);

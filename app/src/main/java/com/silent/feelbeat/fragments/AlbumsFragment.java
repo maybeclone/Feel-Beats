@@ -24,7 +24,7 @@ import com.silent.feelbeat.utils.SilentUtils;
  * Created by silent on 7/17/2017.
  */
 
-public class AlbumsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class AlbumsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int LOADER_ID = 0x00001;
     private static final int COUNT_COL = 2;
@@ -33,7 +33,7 @@ public class AlbumsFragment extends Fragment implements LoaderManager.LoaderCall
     private AlbumAdapter adapter;
     private CallbackAlbumsFragment callback;
 
-    public static AlbumsFragment newInstance(String title, boolean az){
+    public static AlbumsFragment newInstance(String title, boolean az) {
         AlbumsFragment albumsFragment = new AlbumsFragment();
         Bundle bundle = new Bundle();
         bundle.putString(SilentUtils.TITLE_FRAGMENT, title);
@@ -45,11 +45,22 @@ public class AlbumsFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        getLoaderManager().initLoader(LOADER_ID, null, this);
-        if(context instanceof CallbackAlbumsFragment){
+        if (context instanceof CallbackAlbumsFragment) {
             callback = (CallbackAlbumsFragment) context;
         }
         adapter = new AlbumAdapter(context, null, callback);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getLoaderManager().initLoader(LOADER_ID, null, this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getLoaderManager().destroyLoader(LOADER_ID);
     }
 
     @Nullable
@@ -82,16 +93,17 @@ public class AlbumsFragment extends Fragment implements LoaderManager.LoaderCall
         adapter.swapCursor(null);
     }
 
-    public interface CallbackAlbumsFragment{
-        void onItemClick(long id, String title, String info);
+    public interface CallbackAlbumsFragment {
+        void onItemClick(long id, String artist, String title, String info);
     }
 
-    public void reloadData(boolean az){
+    public void reloadData(boolean az) {
         boolean def = getArguments().getBoolean(SilentUtils.EXTRA_ORDER);
-        if(az == def){
+        if (az == def) {
             return;
         }
         getArguments().putBoolean(SilentUtils.EXTRA_ORDER, az);
         getLoaderManager().restartLoader(LOADER_ID, getArguments(), this);
+
     }
 }

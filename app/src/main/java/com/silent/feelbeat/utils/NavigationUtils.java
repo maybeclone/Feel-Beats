@@ -21,14 +21,16 @@ public class NavigationUtils {
 
     public static void navigationToAlbum(Context context, Intent data, DetailAlbumFragment detailAlbumFragment){
         long albumID = data.getLongExtra(DetailAlbumFragment.EXTRA_ALBUMID, -1);
+        String artist = data.getStringExtra(DetailAlbumFragment.EXTRA_ARTIST);
         String title = data.getStringExtra(DetailAlbumFragment.EXTRA_TITLE);
         String info =  data.getStringExtra(DetailAlbumFragment.EXTRA_INFO);
 
         if(detailAlbumFragment == null){
-            detailAlbumFragment = DetailAlbumFragment.newInstance(albumID,title, info);
+            detailAlbumFragment = DetailAlbumFragment.newInstance(albumID,artist, title, info);
         } else {
             Bundle args = detailAlbumFragment.getArguments();
             args.putLong(DetailAlbumFragment.EXTRA_ALBUMID, albumID);
+            args.putString(DetailAlbumFragment.EXTRA_ARTIST, artist);
             args.putString(DetailAlbumFragment.EXTRA_TITLE, title);
             args.putString(DetailAlbumFragment.EXTRA_INFO, info);
             detailAlbumFragment.setArguments(args);
