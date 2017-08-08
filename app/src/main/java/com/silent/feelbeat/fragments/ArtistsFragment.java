@@ -31,10 +31,11 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
     private ArtistAdapter adapter;
     private CallbackArtistFragment callback;
 
-    public static ArtistsFragment newInstance(String title){
+    public static ArtistsFragment newInstance(String title, boolean az){
         ArtistsFragment artistsFragment = new ArtistsFragment();
         Bundle bundle = new Bundle();
         bundle.putString(SilentUtils.TITLE_FRAGMENT, title);
+        bundle.putBoolean(SilentUtils.EXTRA_ORDER, az);
         artistsFragment.setArguments(bundle);
         return artistsFragment;
     }
@@ -47,7 +48,7 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
         } else {
             throw new ClassCastException(" must be implemented CallbackArtistFragment");
         }
-        adapter = new ArtistAdapter(context, null, 0);
+        adapter = new ArtistAdapter(context, null, 0, getArguments().getBoolean(SilentUtils.EXTRA_ORDER));
         getLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
@@ -68,12 +69,13 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        CursorLoader cursorLoader = new ArtistLoader().getCursorLoader(getActivity());
+        CursorLoader cursorLoader = new ArtistLoader().getCursorLoader(getActivity(), getArguments().getBoolean(SilentUtils.EXTRA_ORDER));
         return  cursorLoader;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        adapter.setAZ(getArguments().getBoolean(SilentUtils.EXTRA_ORDER));
         adapter.swapCursor(data);
     }
 
@@ -86,6 +88,15 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         callback.onItemClick(id, adapter.getStringArtist(position));
+    }
+
+    public void reloadData(boolean az) {
+        boolean def = getArguments().getBoolean(SilentUtils.EXTRA_ORDER);
+        if(az == def){
+            return;
+        }
+        getArguments().putBoolean(SilentUtils.EXTRA_ORDER, az);
+        getLoaderManager().restartLoader(LOADER_ID, getArguments(), this);
     }
 
     public interface CallbackArtistFragment {

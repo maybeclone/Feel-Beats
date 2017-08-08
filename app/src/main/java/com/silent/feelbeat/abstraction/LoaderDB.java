@@ -35,5 +35,5 @@ public abstract class LoaderDB<T extends Item> {
 
     public abstract List<Item> getList();
 
-    public abstract CursorLoader getCursorLoader(Context context);
+    public abstract CursorLoader getCursorLoader(Context context, boolean az);
 }

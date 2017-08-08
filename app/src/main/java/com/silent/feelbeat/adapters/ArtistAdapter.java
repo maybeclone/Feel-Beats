@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,12 +44,13 @@ public class ArtistAdapter extends CursorAdapter {
     private int[] usedSection;
     private AlphabetIndexer alphabetIndexer;
     private Cursor cursor;
+    private boolean az;
 
-
-    public ArtistAdapter(Context context, Cursor c, int flags) {
+    public ArtistAdapter(Context context, Cursor c, int flags, boolean az) {
         super(context, c, flags);
         cursor = c;
-        if(c == null){
+        this.az = az;
+        if (c == null) {
             positionHeader = null;
             sectionToOffset = null;
             usedSection = null;
@@ -58,67 +60,71 @@ public class ArtistAdapter extends CursorAdapter {
         countHeader();
     }
 
-    private void countHeader(){
-        if(alphabetIndexer == null){
+    public void setAZ(boolean az) {
+        this.az = az;
+    }
+
+    private void countHeader() {
+        if (az) {
             alphabetIndexer = new AlphabetIndexer(cursor, 1, "%ABCDEFGHIJKLMNOPQRSTUVWXYZ");
         } else {
-            alphabetIndexer.setCursor(cursor);
+            alphabetIndexer = new AlphabetIndexer(cursor, 1, "ZYXWVUTSRQPONMLKJIHGFEDCBA%");
         }
-        if(positionHeader == null){
+        if (positionHeader == null) {
             positionHeader = new TreeMap<>();
         } else {
             positionHeader.clear();
         }
-        if(sectionToOffset == null){
+        if (sectionToOffset == null) {
             sectionToOffset = new HashMap<>();
         } else {
             sectionToOffset.clear();
         }
         int count = cursor.getCount();
         int i;
-        for(i = count-1; i>=0; i--){
+        for (i = count - 1; i >= 0; i--) {
             positionHeader.put(alphabetIndexer.getSectionForPosition(i), i);
         }
-        i=0;
+        i = 0;
         usedSection = new int[positionHeader.keySet().size()];
-        for(Integer section : positionHeader.keySet()){
+        for (Integer section : positionHeader.keySet()) {
             sectionToOffset.put(section, i);
             usedSection[i] = section;
             i++;
         }
 
-        for(Integer section : positionHeader.keySet()){
-            positionHeader.put(section, positionHeader.get(section)+sectionToOffset.get(section));
+        for (Integer section : positionHeader.keySet()) {
+            positionHeader.put(section, positionHeader.get(section) + sectionToOffset.get(section));
         }
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         int type = getItemViewType(position);
-        switch (type){
+        switch (type) {
             case TYPE_HEADER:
                 HeaderHolder headerHolder;
-                if(convertView==null){
+                if (convertView == null) {
                     convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_songs_list_header, parent, false);
                     headerHolder = new HeaderHolder(convertView);
                     convertView.setTag(headerHolder);
                     convertView.setOnClickListener(null);
-                } else{
+                } else {
                     headerHolder = (HeaderHolder) convertView.getTag();
                 }
                 headerHolder.headerText.setText((CharSequence) alphabetIndexer.getSections()[getSectionToPosition(position)]);
                 break;
             case TYPE_NORMAL:
                 ArtistHolder artistHolder;
-                if(convertView==null){
+                if (convertView == null) {
                     convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_songs_list, parent, false);
                     artistHolder = new ArtistHolder(convertView);
                     convertView.setTag(artistHolder);
-                } else{
+                } else {
                     artistHolder = (ArtistHolder) convertView.getTag();
                 }
-                if(!cursor.moveToPosition(position - sectionToOffset.get(getSectionToPosition(position))-1)){
-                    throw new ArrayIndexOutOfBoundsException("can't move to "+position);
+                if (!cursor.moveToPosition(position - sectionToOffset.get(getSectionToPosition(position)) - 1)) {
+                    throw new ArrayIndexOutOfBoundsException("can't move to " + position);
                 }
                 String artist = cursor.getString(1);
                 TextDrawable textDrawable = TextDrawable.builder()
@@ -126,7 +132,7 @@ public class ArtistAdapter extends CursorAdapter {
                 artistHolder.albumArt.setImageDrawable(textDrawable);
                 artistHolder.artistText.setText(artist);
                 artistHolder.infoText.setText(String.format(parent.getContext().getString(R.string.format_info_artist),
-                                                    cursor.getInt(3), cursor.getInt(4)));
+                        cursor.getInt(3), cursor.getInt(4)));
                 break;
         }
 
@@ -139,7 +145,6 @@ public class ArtistAdapter extends CursorAdapter {
     }
 
 
-
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
@@ -148,36 +153,36 @@ public class ArtistAdapter extends CursorAdapter {
     @Override
     public long getItemId(int position) {
         int type = getItemViewType(position);
-        switch (type){
+        switch (type) {
             case TYPE_HEADER:
                 return -1;
             case TYPE_NORMAL:
-                cursor.moveToPosition(position - sectionToOffset.get(getSectionToPosition(position))-1);
+                cursor.moveToPosition(position - sectionToOffset.get(getSectionToPosition(position)) - 1);
                 long id = cursor.getLong(0);
                 return id;
         }
         return -1;
     }
 
-    public String getStringArtist(int position){
-        int i = position - sectionToOffset.get(getSectionToPosition(position))-1;
+    public String getStringArtist(int position) {
+        int i = position - sectionToOffset.get(getSectionToPosition(position)) - 1;
         cursor.moveToPosition(i);
         return cursor.getString(1);
     }
 
-    public int getSectionToPosition(int position){
+    public int getSectionToPosition(int position) {
         int maxLength = usedSection.length;
-        int i=0;
-        while( i<maxLength && position >= positionHeader.get(usedSection[i])){
+        int i = 0;
+        while (i < maxLength && position >= positionHeader.get(usedSection[i])) {
             i++;
         }
-        return usedSection[i-1];
+        return usedSection[i - 1];
     }
 
     @Override
     public int getItemViewType(int position) {
-        for(Integer section : usedSection){
-            if(position == positionHeader.get(section)){
+        for (Integer section : usedSection) {
+            if (position == positionHeader.get(section)) {
                 return TYPE_HEADER;
             }
         }
@@ -191,10 +196,10 @@ public class ArtistAdapter extends CursorAdapter {
 
     @Override
     public int getCount() {
-        if(cursor == null)
+        if (cursor == null)
             return 0;
-        if(super.getCount()!=0){
-            return super.getCount()+usedSection.length;
+        if (super.getCount() != 0) {
+            return super.getCount() + usedSection.length;
         }
         return super.getCount();
     }
@@ -202,27 +207,27 @@ public class ArtistAdapter extends CursorAdapter {
     @Override
     public Cursor swapCursor(Cursor newCursor) {
         cursor = newCursor;
-        if(newCursor!=null) {
+        if (newCursor != null) {
             countHeader();
         }
         return super.swapCursor(newCursor);
     }
 
-    static class ArtistHolder{
+    static class ArtistHolder {
         public ImageView albumArt;
         public TextView artistText, infoText;
 
-        public ArtistHolder(View itemView){
+        public ArtistHolder(View itemView) {
             albumArt = (ImageView) itemView.findViewById(R.id.avaImage);
             artistText = (TextView) itemView.findViewById(R.id.titleText);
             infoText = (TextView) itemView.findViewById(R.id.artistText);
         }
     }
 
-    static class HeaderHolder{
+    static class HeaderHolder {
         public TextView headerText;
 
-        public HeaderHolder(View itemView){
+        public HeaderHolder(View itemView) {
             headerText = (TextView) itemView.findViewById(R.id.headerText);
         }
     }

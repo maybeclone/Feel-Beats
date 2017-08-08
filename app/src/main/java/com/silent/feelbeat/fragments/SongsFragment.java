@@ -16,6 +16,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.util.TimeUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,10 +47,11 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
     // Communicate Activity
     private CallbackService callBackService;
 
-    public static SongsFragment newInstance(String title) {
+    public static SongsFragment newInstance(String title, boolean az) {
         SongsFragment songsFragment = new SongsFragment();
         Bundle bundle = new Bundle();
         bundle.putString(SilentUtils.TITLE_FRAGMENT, title);
+        bundle.putBoolean(SilentUtils.EXTRA_ORDER, az);
         songsFragment.setArguments(bundle);
         return songsFragment;
     }
@@ -57,7 +59,7 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        adapter = new SongListAdapter(context, null, 0);
+        adapter = new SongListAdapter(context, null, 0, getArguments().getBoolean(SilentUtils.EXTRA_ORDER));
         if (context instanceof CallbackService) {
             callBackService = (CallbackService) context;
         } else {
@@ -68,7 +70,7 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getLoaderManager().initLoader(LOADER_ID, null, this);
+        getLoaderManager().initLoader(LOADER_ID, getArguments(), this);
     }
 
     @Nullable
@@ -89,7 +91,7 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        CursorLoader cursorLoader = new SongsLoader().getCursorLoader(getActivity());
+        CursorLoader cursorLoader = new SongsLoader().getCursorLoader(getActivity(), args.getBoolean(SilentUtils.EXTRA_ORDER));
         return cursorLoader;
     }
 
@@ -100,6 +102,7 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        adapter.setAZ(getArguments().getBoolean(SilentUtils.EXTRA_ORDER));
         adapter.swapCursor(data);
     }
 
@@ -115,6 +118,15 @@ public class SongsFragment extends Fragment implements LoaderManager.LoaderCallb
 
     public SongListAdapter getAdapter(){
         return this.adapter;
+    }
+
+    public void reloadData(boolean az){
+        boolean def = getArguments().getBoolean(SilentUtils.EXTRA_ORDER);
+        if(az == def){
+            return;
+        }
+        getArguments().putBoolean(SilentUtils.EXTRA_ORDER, az);
+        getLoaderManager().restartLoader(LOADER_ID, getArguments(), this);
     }
 
 }

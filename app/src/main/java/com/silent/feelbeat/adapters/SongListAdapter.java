@@ -24,6 +24,7 @@ import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -31,12 +32,13 @@ import java.util.TreeMap;
  * Created by silent on 7/7/2017.
  */
 
-public class SongListAdapter extends CursorAdapter{
+public class SongListAdapter extends CursorAdapter {
 
     private static final int TYPE_HEADER = 1;
     private static final int TYPE_NORMAL = 0;
 
     private static final int TYPE_COUNT = 2;
+    private boolean az;
 
     private AlphabetIndexer indexer;
 
@@ -52,82 +54,91 @@ public class SongListAdapter extends CursorAdapter{
     //to appear in
     private Map<Integer, Integer> sectionToPosition;
 
-    public SongListAdapter(Context context, Cursor c, int flags) {
+    public SongListAdapter(Context context, Cursor c, int flags, boolean az) {
         super(context, c, flags);
         cursor = c;
         sectionToOffset = null;
         sectionToPosition = null;
         indexer = null;
         usedSectionNumbers = null;
-        if(c == null){
+        this.az = az;
+        if (c == null) {
             return;
         }
         countHeader();
     }
 
-    private void countHeader(){
-        if(indexer == null){
+    public void changeSort() {
+        if (az) {
+            az = false;
+        } else {
+            az = true;
+        }
+    }
+
+    private void countHeader() {
+        if (az) {
             indexer = new AlphabetIndexer(cursor, cursor.getColumnIndex(MediaStore.Audio.Media.TITLE), "%ABCDEFGHIJKLMNOPQRSTUVWXYZ");
         } else {
-            indexer.setCursor(cursor);
+            indexer = new AlphabetIndexer(cursor, cursor.getColumnIndex(MediaStore.Audio.Media.TITLE), "ZYXWVUTSRQPONMLKJIHGFEDCBA%");
         }
-        if(sectionToPosition == null){
+
+        if (sectionToPosition == null) {
             sectionToPosition = new TreeMap<>();
         } else {
             sectionToPosition.clear();
         }
 
-        if(sectionToOffset == null){
+        if (sectionToOffset == null) {
             sectionToOffset = new HashMap<>();
         } else {
             sectionToOffset.clear();
         }
         final int count = cursor.getCount();
         int i;
-        for(i = count-1; i>=0; i--){
+        for (i = count - 1; i >= 0; i--) {
             sectionToPosition.put(indexer.getSectionForPosition(i), i);
         }
-        i =0;
+        i = 0;
         usedSectionNumbers = new int[sectionToPosition.keySet().size()];
 
-        for(Integer section : sectionToPosition.keySet()){
+        for (Integer section : sectionToPosition.keySet()) {
             sectionToOffset.put(section, i);
             usedSectionNumbers[i] = section;
             i++;
         }
 
-
-        for(Integer section : sectionToPosition.keySet()){
-            sectionToPosition.put(section, sectionToPosition.get(section)+sectionToOffset.get(section));
+        for (Integer section : sectionToPosition.keySet()) {
+            sectionToPosition.put(section, sectionToPosition.get(section) + sectionToOffset.get(section));
         }
     }
 
     @Override
     public View getView(final int position, View convertView, final ViewGroup parent) {
         int viewType = getItemViewType(position);
-        switch (viewType){
+        switch (viewType) {
             case TYPE_HEADER:
                 HeaderItemHolder headerHolder;
-                if(convertView==null){
+                if (convertView == null) {
                     convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_songs_list_header, parent, false);
                     convertView.setOnClickListener(null);
                     headerHolder = new HeaderItemHolder(convertView);
                     convertView.setTag(headerHolder);
-                } else{
+                } else {
                     headerHolder = (HeaderItemHolder) convertView.getTag();
                 }
-                headerHolder.headerText.setText((String)indexer.getSections()[getSectionForPosition(position)]);
+                headerHolder.headerText.setText((String) indexer.getSections()[getSectionForPosition(position)]);
                 break;
             case TYPE_NORMAL:
                 SongItemHolder songHolder;
-                if(convertView==null){
+                if (convertView == null) {
                     convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_songs_list, parent, false);
                     songHolder = new SongItemHolder(convertView);
                     convertView.setTag(songHolder);
-                } else{
+                } else {
                     songHolder = (SongItemHolder) convertView.getTag();
                 }
-                if (!cursor.moveToPosition(position - sectionToOffset.get(getSectionForPosition(position))-1)) {
+                if (!cursor.moveToPosition(position - sectionToOffset.get(getSectionForPosition(position)) - 1)) {
                     throw new IllegalStateException("couldn't move cursor to position " + position);
                 }
                 songHolder.titleText.setText(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
@@ -148,13 +159,13 @@ public class SongListAdapter extends CursorAdapter{
 
         //linear scan over the used alphabetical sections' positions
         //to find where the given section fits in
-        while (i < maxLength && position >= sectionToPosition.get(usedSectionNumbers[i])){
+        while (i < maxLength && position >= sectionToPosition.get(usedSectionNumbers[i])) {
             i++;
         }
-        return usedSectionNumbers[i-1];
+        return usedSectionNumbers[i - 1];
     }
 
-    public int getRealPosition(int position){
+    public int getRealPosition(int position) {
         return position - sectionToOffset.get(getSectionForPosition(position)) - 1;
     }
 
@@ -165,9 +176,9 @@ public class SongListAdapter extends CursorAdapter{
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-
         return null;
     }
+
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
@@ -175,11 +186,11 @@ public class SongListAdapter extends CursorAdapter{
 
     @Override
     public int getCount() {
-        if(cursor==null){
+        if (cursor == null) {
             return 0;
         }
-        if(super.getCount()!=0){
-            return super.getCount()+usedSectionNumbers.length;
+        if (super.getCount() != 0) {
+            return super.getCount() + usedSectionNumbers.length;
         }
 
 
@@ -188,9 +199,9 @@ public class SongListAdapter extends CursorAdapter{
 
     @Override
     public int getItemViewType(int position) {
-        if(cursor!=null){
-            for(Integer section : usedSectionNumbers){
-                if(position == sectionToPosition.get(section)){
+        if (cursor != null) {
+            for (Integer section : usedSectionNumbers) {
+                if (position == sectionToPosition.get(section)) {
                     return TYPE_HEADER;
                 }
             }
@@ -201,7 +212,7 @@ public class SongListAdapter extends CursorAdapter{
     @Override
     public Cursor swapCursor(Cursor newCursor) {
         cursor = newCursor;
-        if(cursor!=null){
+        if (cursor != null) {
             countHeader();
         }
         return super.swapCursor(newCursor);
@@ -210,18 +221,22 @@ public class SongListAdapter extends CursorAdapter{
     @Override
     public long getItemId(int position) {
         int type = getItemViewType(position);
-        switch (type){
+        switch (type) {
             case TYPE_HEADER:
                 return -1;
             case TYPE_NORMAL:
-                cursor.moveToPosition(position - sectionToOffset.get(getSectionForPosition(position))-1);
+                cursor.moveToPosition(position - sectionToOffset.get(getSectionForPosition(position)) - 1);
                 long id = cursor.getLong(0);
                 return id;
         }
         return -1;
     }
 
-    public static class SongItemHolder{
+    public void setAZ(boolean az){
+        this.az = az;
+    }
+
+    public static class SongItemHolder {
 
         public ImageView avaImage;
         public TextView titleText, artistText;
@@ -230,15 +245,15 @@ public class SongListAdapter extends CursorAdapter{
 
             avaImage = (ImageView) itemView.findViewById(R.id.avaImage);
             titleText = (TextView) itemView.findViewById(R.id.titleText);
-            artistText =(TextView) itemView.findViewById(R.id.artistText);
+            artistText = (TextView) itemView.findViewById(R.id.artistText);
         }
 
     }
 
-    static class HeaderItemHolder{
+    static class HeaderItemHolder {
         public TextView headerText;
 
-        public HeaderItemHolder(View itemView){
+        public HeaderItemHolder(View itemView) {
             headerText = (TextView) itemView.findViewById(R.id.headerText);
         }
     }

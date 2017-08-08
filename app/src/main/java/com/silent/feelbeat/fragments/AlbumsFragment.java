@@ -33,10 +33,11 @@ public class AlbumsFragment extends Fragment implements LoaderManager.LoaderCall
     private AlbumAdapter adapter;
     private CallbackAlbumsFragment callback;
 
-    public static AlbumsFragment newInstance(String title){
+    public static AlbumsFragment newInstance(String title, boolean az){
         AlbumsFragment albumsFragment = new AlbumsFragment();
         Bundle bundle = new Bundle();
         bundle.putString(SilentUtils.TITLE_FRAGMENT, title);
+        bundle.putBoolean(SilentUtils.EXTRA_ORDER, az);
         albumsFragment.setArguments(bundle);
         return albumsFragment;
     }
@@ -67,7 +68,7 @@ public class AlbumsFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        CursorLoader cursorLoader = new AlbumsLoader().getCursorLoader(getActivity());
+        CursorLoader cursorLoader = new AlbumsLoader().getCursorLoader(getActivity(), getArguments().getBoolean(SilentUtils.EXTRA_ORDER));
         return cursorLoader;
     }
 
@@ -83,5 +84,14 @@ public class AlbumsFragment extends Fragment implements LoaderManager.LoaderCall
 
     public interface CallbackAlbumsFragment{
         void onItemClick(long id, String title, String info);
+    }
+
+    public void reloadData(boolean az){
+        boolean def = getArguments().getBoolean(SilentUtils.EXTRA_ORDER);
+        if(az == def){
+            return;
+        }
+        getArguments().putBoolean(SilentUtils.EXTRA_ORDER, az);
+        getLoaderManager().restartLoader(LOADER_ID, getArguments(), this);
     }
 }

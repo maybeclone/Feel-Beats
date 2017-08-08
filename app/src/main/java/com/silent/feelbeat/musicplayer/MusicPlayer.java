@@ -61,7 +61,7 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
     }
 
     public void updateInfo(int position){
-        if(list == null){
+        if(list.size() == 0){
             return;
         }
         Intent intent = new Intent(RECEIVER_INFO);
@@ -75,6 +75,9 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
 
     @Override
     public void play(int position){
+        if(list.size() == 0){
+            return;
+        }
         play.reset();
         Uri uri = SongsLoader.getSongUri(list.get(position).id);
         try {

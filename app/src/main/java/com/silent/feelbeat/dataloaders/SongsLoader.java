@@ -32,7 +32,8 @@ public class SongsLoader extends LoaderDB {
             MediaStore.Audio.Media.ARTIST_ID};
 
     public final static Uri SONG_URI = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-    public final static String ORDER_BY_NAME = PROJECTION[1] + " COLLATE LOCALIZED ASC";
+    public final static String ORDER_BY_NAME_AZ = PROJECTION[1] + " COLLATE LOCALIZED ASC";
+    public final static String ORDER_BY_NAME_ZA =  PROJECTION[1] + " COLLATE LOCALIZED DESC";
 
     public SongsLoader() {
 
@@ -49,7 +50,7 @@ public class SongsLoader extends LoaderDB {
         if (contentResolver == null) {
             return null;
         }
-        return contentResolver.query(SONG_URI, PROJECTION, PROJECTION[6] + "= ?", new String[]{"1"}, ORDER_BY_NAME);
+        return contentResolver.query(SONG_URI, PROJECTION, PROJECTION[6] + "= ?", new String[]{"1"}, ORDER_BY_NAME_AZ);
     }
 
     public Cursor getCursor(long artistID) {
@@ -57,7 +58,7 @@ public class SongsLoader extends LoaderDB {
             return null;
         }
         return contentResolver.query(SONG_URI, PROJECTION, PROJECTION[6] + "= ? AND " + PROJECTION[8] + " = ?",
-                new String[]{"1", artistID + ""}, ORDER_BY_NAME);
+                new String[]{"1", artistID + ""}, ORDER_BY_NAME_AZ);
     }
 
     @Override
@@ -65,7 +66,7 @@ public class SongsLoader extends LoaderDB {
         if (contentResolver == null) {
             return null;
         }
-        Cursor cursor = contentResolver.query(SONG_URI, PROJECTION, null, null, ORDER_BY_NAME);
+        Cursor cursor = contentResolver.query(SONG_URI, PROJECTION, null, null, ORDER_BY_NAME_AZ);
         if (cursor == null) {
             return null;
         }
@@ -85,13 +86,14 @@ public class SongsLoader extends LoaderDB {
     }
 
     @Override
-    public CursorLoader getCursorLoader(Context context) {
+    public CursorLoader getCursorLoader(Context context, boolean az) {
+        String order = az ? ORDER_BY_NAME_AZ : ORDER_BY_NAME_ZA ;
         return new CursorLoader(context,
                 SONG_URI,
                 PROJECTION,
                 PROJECTION[6] + " = ?",
                 new String[]{"1"},
-                ORDER_BY_NAME);
+                order);
     }
 
     public ArrayList<Song> getList(String title, int limit) {
@@ -99,7 +101,7 @@ public class SongsLoader extends LoaderDB {
                 PROJECTION,
                 PROJECTION[6] + " = ? AND " + PROJECTION[1] + " LIKE ?",
                 new String[]{"1", title+"%"},
-                ORDER_BY_NAME);
+                ORDER_BY_NAME_AZ);
 
         if (cursor == null) {
             return null;
@@ -126,16 +128,7 @@ public class SongsLoader extends LoaderDB {
                 PROJECTION,
                 PROJECTION[6] + " = ? AND " + PROJECTION[8] + " = ? ",
                 new String[]{"1", artistID + ""},
-                ORDER_BY_NAME);
-    }
-
-    public CursorLoader getCursorLoader(Context context, String name) {
-        return new CursorLoader(context,
-                SONG_URI,
-                PROJECTION,
-                PROJECTION[6] + " = ? AND " + PROJECTION[1] + " = ? ",
-                new String[]{"1", name + ""},
-                ORDER_BY_NAME);
+                ORDER_BY_NAME_AZ);
     }
 
     public CursorLoader getCursorLoaderAlbum(Context context, long albumID) {
@@ -144,7 +137,7 @@ public class SongsLoader extends LoaderDB {
                 PROJECTION,
                 PROJECTION[6] + " = ? AND " + PROJECTION[7] + " = ? ",
                 new String[]{"1", albumID + ""},
-                ORDER_BY_NAME);
+                ORDER_BY_NAME_AZ);
     }
 
     public static Uri getSongUri(long id) {

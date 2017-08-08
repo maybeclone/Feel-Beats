@@ -5,6 +5,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -15,6 +16,8 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +27,7 @@ import com.silent.feelbeat.activities.MainActivity;
 import com.silent.feelbeat.activities.SearchableActivity;
 import com.silent.feelbeat.adapters.TabAdapter;
 import com.silent.feelbeat.callback.CallbackControl;
+import com.silent.feelbeat.models.Artist;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +43,8 @@ public class ListFragment extends Fragment implements Toolbar.OnMenuItemClickLis
     private TabLayout tabLayout;
     private List<Fragment> list;
     private TabAdapter adapter;
+
+
 
     @Override
     public void onAttach(Context context) {
@@ -59,16 +65,18 @@ public class ListFragment extends Fragment implements Toolbar.OnMenuItemClickLis
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        setHasOptionsMenu(true);
         toolbar = (Toolbar) view.findViewById(R.id.toolBar);
 
         viewPager = (ViewPager) view.findViewById(R.id.viewPager);
         tabLayout = (TabLayout) view.findViewById(R.id.tabLayout);
 
+        // get from Preference
+
         list = new ArrayList<>();
-        list.add(ArtistsFragment.newInstance("Artists"));
-        list.add(SongsFragment.newInstance("Songs"));
-        list.add(AlbumsFragment.newInstance("Albums"));
+        list.add(ArtistsFragment.newInstance("Artists", true));
+        list.add(SongsFragment.newInstance("Songs", true));
+        list.add(AlbumsFragment.newInstance("Albums", true));
         list.add(PlaylistFragment.newInstance("Playlist"));
 
         tabLayout.setupWithViewPager(viewPager);
@@ -79,6 +87,9 @@ public class ListFragment extends Fragment implements Toolbar.OnMenuItemClickLis
         toolbar.setTitle(getContext().getResources().getString(R.string.app_name));
         toolbar.inflateMenu(R.menu.main_menu);
         toolbar.setOnMenuItemClickListener(this);
+
+        // get boolean from preference
+        toolbar.getMenu().findItem(R.id.az).setChecked(true);
 
     }
 
@@ -96,9 +107,17 @@ public class ListFragment extends Fragment implements Toolbar.OnMenuItemClickLis
                 break;
             case R.id.az:
                 Log.d("Menu Item", "A-Z");
+                item.setChecked(true);
+                ((ArtistsFragment) getFragment(0)).reloadData(true);
+                ((SongsFragment) getFragment(1)).reloadData(true);
+                ((AlbumsFragment) getFragment(2)).reloadData(true);
                 break;
             case R.id.za:
+                item.setChecked(true);
                 Log.d("Menu Item", "Z-A");
+                ((ArtistsFragment) getFragment(0)).reloadData(false);
+                ((SongsFragment) getFragment(1)).reloadData(false);
+                ((AlbumsFragment) getFragment(2)).reloadData(false);
                 break;
             case R.id.settings:
                 Log.d("Menu Item", "Settings");

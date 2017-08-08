@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.provider.MediaStore;
 import android.support.v7.graphics.Palette;
 import android.support.v7.graphics.Target;
 import android.support.v7.widget.RecyclerView;
@@ -33,7 +34,7 @@ public class AlbumAdapter extends RecyclerViewCursor<AlbumAdapter.AlbumHolder> {
 
     private AlbumsFragment.CallbackAlbumsFragment callback;
 
-    public AlbumAdapter(Context context, Cursor cursor, AlbumsFragment.CallbackAlbumsFragment callback){
+    public AlbumAdapter(Context context, Cursor cursor, AlbumsFragment.CallbackAlbumsFragment callback) {
         super(context, cursor);
         this.callback = callback;
     }
@@ -48,7 +49,9 @@ public class AlbumAdapter extends RecyclerViewCursor<AlbumAdapter.AlbumHolder> {
                 mCursor.moveToPosition(albumHolder.getAdapterPosition());
                 callback.onItemClick(mCursor.getLong(0),
                         mCursor.getString(1),
-                        String.format(parent.getContext().getString(R.string.format_time_detail_album), mCursor.getInt(4), mCursor.getInt(5)));
+                        String.format(parent.getContext().getString(R.string.format_time_detail_album),
+                                mCursor.getInt(mCursor.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS)),
+                                mCursor.getInt(mCursor.getColumnIndex(MediaStore.Audio.Albums.FIRST_YEAR))));
             }
         });
         return albumHolder;
@@ -64,7 +67,7 @@ public class AlbumAdapter extends RecyclerViewCursor<AlbumAdapter.AlbumHolder> {
                     @Override
                     public void onGenerated(Palette palette) {
                         Palette.Swatch swatch = palette.getVibrantSwatch();
-                        if(swatch != null){
+                        if (swatch != null) {
                             int color = swatch.getRgb();
                             holder.background.setBackgroundColor(color);
                             int textColor = ColorUtils.getBlackWhiteColor(color);
@@ -72,7 +75,7 @@ public class AlbumAdapter extends RecyclerViewCursor<AlbumAdapter.AlbumHolder> {
                             holder.numOfSong.setTextColor(textColor);
                         } else {
                             Palette.Swatch mutedSwatch = palette.getMutedSwatch();
-                            if(mutedSwatch != null){
+                            if (mutedSwatch != null) {
                                 int color = mutedSwatch.getRgb();
                                 holder.background.setBackgroundColor(color);
                                 int textColor = ColorUtils.getBlackWhiteColor(color);
@@ -106,7 +109,7 @@ public class AlbumAdapter extends RecyclerViewCursor<AlbumAdapter.AlbumHolder> {
 
         holder.albumTitle.setText(cursor.getString(1));
         holder.numOfSong.setText(String.format(holder.albumArt.getContext().getString(R.string.format_num_of_song),
-                                    cursor.getInt(4)));
+                cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS))));
     }
 
 

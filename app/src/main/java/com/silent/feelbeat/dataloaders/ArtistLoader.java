@@ -26,7 +26,8 @@ public class ArtistLoader extends LoaderDB {
                                             MediaStore.Audio.Artists.NUMBER_OF_ALBUMS,
                                             MediaStore.Audio.Artists.NUMBER_OF_TRACKS};
 
-    public final static String ORDER_BY_NAME = PROJECTION[1]+" COLLATE LOCALIZED ASC";
+    public final static String ORDER_BY_NAME_AZ = PROJECTION[1]+" COLLATE LOCALIZED ASC";
+    public final static String ORDER_BY_NAME_ZA =  PROJECTION[1]+" COLLATE LOCALIZED DESC";
 
     public ArtistLoader(){
 
@@ -41,7 +42,7 @@ public class ArtistLoader extends LoaderDB {
         if(contentResolver == null){
             return null;
         }
-        return contentResolver.query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, PROJECTION, null, null, ORDER_BY_NAME);
+        return contentResolver.query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, PROJECTION, null, null, ORDER_BY_NAME_AZ);
     }
 
     @Override
@@ -63,12 +64,13 @@ public class ArtistLoader extends LoaderDB {
     }
 
     @Override
-    public CursorLoader getCursorLoader(Context context) {
+    public CursorLoader getCursorLoader(Context context, boolean az) {
+        String order = az ? ORDER_BY_NAME_AZ : ORDER_BY_NAME_ZA;
         return new CursorLoader(context,
                     MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, PROJECTION,
                     null,
                     null,
-                    null);
+                    order);
     }
 
     public ArrayList<Artist> getList(String title, int limit) {
@@ -76,7 +78,7 @@ public class ArtistLoader extends LoaderDB {
                 PROJECTION,
                 PROJECTION[1] + " LIKE ?",
                 new String[]{title+"%"},
-                ORDER_BY_NAME);
+                ORDER_BY_NAME_AZ);
 
         if (cursor == null) {
             return null;
@@ -101,6 +103,6 @@ public class ArtistLoader extends LoaderDB {
                 PROJECTION,
                 PROJECTION[6] + " = ? AND " + PROJECTION[1] + " = ? ",
                 new String[]{"1", artist+""},
-                ORDER_BY_NAME);
+                ORDER_BY_NAME_AZ);
     }
 }

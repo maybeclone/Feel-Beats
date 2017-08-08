@@ -31,7 +31,8 @@ public class AlbumsLoader extends LoaderDB {
             MediaStore.Audio.Albums.NUMBER_OF_SONGS,
             MediaStore.Audio.Albums.ARTIST};
 
-    public final static String ORDER_BY_NAME = PROJECTION[1]+" COLLATE LOCALIZED ASC";
+    public final static String ORDER_BY_NAME_AZ = PROJECTION[1]+" COLLATE LOCALIZED ASC";
+    public final static String ORDER_BY_NAME_ZA = PROJECTION[1]+" COLLATE LOCALIZED DESC";
 
     public AlbumsLoader() {
 
@@ -71,13 +72,14 @@ public class AlbumsLoader extends LoaderDB {
     }
 
     @Override
-    public CursorLoader getCursorLoader(Context context) {
+    public CursorLoader getCursorLoader(Context context, boolean az) {
+        String order = az ? ORDER_BY_NAME_AZ : ORDER_BY_NAME_ZA;
         return new CursorLoader(context,
                 MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                 PROJECTION,
                 null,
                 null,
-                null);
+                order);
     }
 
     public ArrayList<Album> getList(String title, int limit) {
@@ -85,7 +87,7 @@ public class AlbumsLoader extends LoaderDB {
                 PROJECTION,
                 PROJECTION[1] + " LIKE ?",
                 new String[]{ title+"%"},
-                ORDER_BY_NAME);
+                ORDER_BY_NAME_AZ);
 
         if (cursor == null) {
             return null;
@@ -112,6 +114,6 @@ public class AlbumsLoader extends LoaderDB {
                 PROJECTION,
                 PROJECTION[6] + " = ? AND " + PROJECTION[1] + " = ? ",
                 new String[]{"1", album+""},
-                ORDER_BY_NAME);
+                ORDER_BY_NAME_AZ);
     }
 }

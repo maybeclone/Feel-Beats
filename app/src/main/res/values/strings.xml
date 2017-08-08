@@ -12,6 +12,7 @@
     <string name="format_time_detail_album">%1$d songs - %2$d </string>
 
     <!--main_menu_icon_title-->
+    <string name="item_menu_overflow">Menu</string>
     <string name="item_search">Search</string>
     <string name="item_sort">Sort By</string>
     <string name="item_settings">Settings</string>
