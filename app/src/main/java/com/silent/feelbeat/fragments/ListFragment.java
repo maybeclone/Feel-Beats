@@ -1,5 +1,6 @@
 package com.silent.feelbeat.fragments;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -90,7 +91,6 @@ public class ListFragment extends Fragment implements Toolbar.OnMenuItemClickLis
 
         // get boolean from preference
         toolbar.getMenu().findItem(R.id.az).setChecked(true);
-
     }
 
     public Fragment getFragment(int position){

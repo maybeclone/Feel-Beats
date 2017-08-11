@@ -26,7 +26,8 @@ public class NavigationUtils {
         String info =  data.getStringExtra(DetailAlbumFragment.EXTRA_INFO);
 
         if(detailAlbumFragment == null){
-            detailAlbumFragment = DetailAlbumFragment.newInstance(albumID,artist, title, info);
+            // read from Preference
+            detailAlbumFragment = DetailAlbumFragment.newInstance(albumID,artist, title, info, true);
         } else {
             Bundle args = detailAlbumFragment.getArguments();
             args.putLong(DetailAlbumFragment.EXTRA_ALBUMID, albumID);

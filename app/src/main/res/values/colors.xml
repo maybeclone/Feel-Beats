@@ -7,4 +7,7 @@
     <color name="colorHighlight">#98b2f5</color>
     <color name="colorHighlightDark">#2a1f3c</color>
     <color name="colorCaption">#bbb6c5</color>
+    <color name="colorGrayWhite">#FFDFDCE4</color>
+    <color name="colorToolbar">#38bbb6c5</color>
+    <color name="colorTitle">#AA000000</color>
 </resources>

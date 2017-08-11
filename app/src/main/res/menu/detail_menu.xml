@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu"
+        android:title="@string/item_menu_overflow"
+        android:icon="@drawable/ic_menu"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/sort"
+                android:title="@string/item_sort"
+                app:showAsAction="never">
+                <menu>
+                    <group
+                        android:checkableBehavior="single"
+                        android:menuCategory="alternative">
+                        <item
+                            android:id="@+id/az"
+                            android:title="@string/item_sort_az"
+                            app:showAsAction="never"/>
+                        <item
+                            android:id="@+id/za"
+                            android:title="@string/item_sort_za"
+                            app:showAsAction="never"/>
+                    </group>
+                </menu>
+
+            </item>
+            <item
+                android:id="@+id/settings"
+                android:title="@string/item_settings"
+                app:showAsAction="never"/>
+        </menu>
+
+    </item>
+
+
+</menu>

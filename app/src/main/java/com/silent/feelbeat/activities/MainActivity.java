@@ -238,7 +238,8 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
     @Override
     public void onItemClick(long id, String artist, String title, String info) {
         if (detailAlbumFragment == null) {
-            detailAlbumFragment = DetailAlbumFragment.newInstance(id, artist, title, info);
+            // read from Preference
+            detailAlbumFragment = DetailAlbumFragment.newInstance(id, artist, title, info, true);
         } else {
             Bundle args = detailAlbumFragment.getArguments();
             args.putLong(DetailAlbumFragment.EXTRA_ALBUMID, id);

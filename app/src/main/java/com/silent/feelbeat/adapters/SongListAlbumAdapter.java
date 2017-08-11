@@ -28,7 +28,7 @@ public class SongListAlbumAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View v = LayoutInflater.from(context).inflate(R.layout.item_songs_list, parent, false);
+        View v = LayoutInflater.from(context).inflate(R.layout.item_song_album_detail, parent, false);
         ViewHolder viewHolder = new ViewHolder(v);
         v.setTag(viewHolder);
         return v;
@@ -38,21 +38,17 @@ public class SongListAlbumAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
         viewHolder.title.setText(cursor.getString(1));
-        viewHolder.time.setText(SilentUtils.getStringTimeFromDuration(context, cursor.getLong(4)));
-        TextDrawable drawable = TextDrawable.builder().buildRect(cursor.getPosition()+1+"", ColorUtils.COLOR_GREY);
-        viewHolder.img.setImageDrawable(drawable);
+        viewHolder.num.setText(cursor.getPosition()+1+" ");
     }
 
 
     static class ViewHolder{
 
-        public ImageView img;
-        public TextView title, time;
+        public TextView title, num;
 
         public ViewHolder(View itemView) {
-            img = (ImageView) itemView.findViewById(R.id.avaImage);
+            num = (TextView) itemView.findViewById(R.id.numText);
             title = (TextView) itemView.findViewById(R.id.titleText);
-            time = (TextView) itemView.findViewById(R.id.artistText);
         }
     }
 }

@@ -131,13 +131,14 @@ public class SongsLoader extends LoaderDB {
                 ORDER_BY_NAME_AZ);
     }
 
-    public CursorLoader getCursorLoaderAlbum(Context context, long albumID) {
+    public CursorLoader getCursorLoaderAlbum(Context context, long albumID, boolean az) {
+        String orderBy = az ? ORDER_BY_NAME_AZ : ORDER_BY_NAME_ZA;
         return new CursorLoader(context,
                 SONG_URI,
                 PROJECTION,
                 PROJECTION[6] + " = ? AND " + PROJECTION[7] + " = ? ",
                 new String[]{"1", albumID + ""},
-                ORDER_BY_NAME_AZ);
+                orderBy);
     }
 
     public static Uri getSongUri(long id) {

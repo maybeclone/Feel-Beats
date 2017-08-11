@@ -44,7 +44,6 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Log.d("Artist Fragment", "onAttach");
         if (context instanceof CallbackArtistFragment) {
             callback = (CallbackArtistFragment) context;
         } else {
@@ -53,40 +52,31 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
         adapter = new ArtistAdapter(context, null, 0, getArguments().getBoolean(SilentUtils.EXTRA_ORDER));
     }
 
-    public ArtistsFragment() {
-        Log.d("Artist Fragment", "constructor");
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.d("Fragment", "onDestroyView");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("Fragment", "onDestroy");
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d("Fragment", "onCreateView");
         return inflater.inflate(R.layout.fragment_listview, container, false);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Log.d("Fragment", "onStart");
         getLoaderManager().initLoader(LOADER_ID, getArguments(), this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.d("Fragment", "onStop");
         getLoaderManager().destroyLoader(LOADER_ID);
     }
 
@@ -101,7 +91,6 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.d("onCreateLoader", args.getBoolean(SilentUtils.EXTRA_ORDER) + "");
         CursorLoader cursorLoader = new ArtistLoader().getCursorLoader(getActivity(), args.getBoolean(SilentUtils.EXTRA_ORDER));
         return cursorLoader;
     }

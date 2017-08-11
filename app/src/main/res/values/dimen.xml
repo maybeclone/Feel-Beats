@@ -16,4 +16,10 @@
 
     <!--fragment_detail_album-->
     <dimen name="image_wheel">50dp</dimen>
+
+    <!--item_album_detail_artist-->
+    <dimen name="album_art">110dp</dimen>
+
+    <!--fragment_detail_artist-->
+    <dimen name="space_albums_list">150dp</dimen>
 </resources>

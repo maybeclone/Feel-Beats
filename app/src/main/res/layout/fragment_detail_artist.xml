@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -15,6 +16,26 @@
 
     </android.support.v7.widget.Toolbar>
 
+    <TextView
+        android:id="@+id/albumText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/all_albums"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline2"
+        android:padding="10dp" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/space_albums_list"
+        app:layout_constraintTop_toBottomOf="@id/albumText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"/>
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="0dp"
@@ -23,16 +44,16 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolBar"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintBottom_toTopOf="@+id/guideline2"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintBottom_toTopOf="@+id/guideline2" />
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/guideline2"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.4" />
+        app:layout_constraintGuide_percent="0.4"
+        tools:layout_editor_absoluteY="227dp"
+        tools:layout_editor_absoluteX="0dp" />
     <TextView
         android:id="@+id/text"
         android:layout_width="0dp"
@@ -40,7 +61,7 @@
         android:text="@string/all_songs"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline2"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerView"
         android:padding="10dp" />
     <ListView
         android:id="@+id/listSong"
@@ -52,8 +73,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text"
         app:layout_constraintVertical_bias="1.0"
-        android:divider="@null"
-        android:layout_marginBottom="@dimen/height_quick_control"/>
+        android:divider="@null" />
 
 
 </android.support.constraint.ConstraintLayout>
