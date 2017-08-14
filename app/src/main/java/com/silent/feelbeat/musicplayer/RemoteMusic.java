@@ -55,8 +55,8 @@ public class RemoteMusic {
 
     public void bindService(Context context){
         Intent intent = new Intent(context, PlayingService.class);
-        context.startService(intent);
-        context.bindService(intent, connection, Context.BIND_AUTO_CREATE);
+        context.getApplicationContext().startService(intent);
+        context.getApplicationContext().bindService(intent, connection, Context.BIND_AUTO_CREATE);
         bound = true;
     }
 
@@ -147,10 +147,10 @@ public class RemoteMusic {
     }
 
     public void unbindService(Context context){
-        if(bound){
-            context.unbindService(connection);
-            bound = false;
-        }
+//        if(bound){
+//            context.unbindService(connection);
+//            bound = false;
+//        }
     }
 
     public void updateInfo(){

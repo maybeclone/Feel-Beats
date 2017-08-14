@@ -94,7 +94,7 @@ public class AlbumsFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
     public interface CallbackAlbumsFragment {
-        void onItemClick(long id, String artist, String title, String info);
+        void onItemClick(long id, String artist, String title, String info, boolean az);
     }
 
     public void reloadData(boolean az) {

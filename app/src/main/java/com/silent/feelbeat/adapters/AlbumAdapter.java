@@ -52,7 +52,7 @@ public class AlbumAdapter extends RecyclerViewCursor<AlbumAdapter.AlbumHolder> {
                         mCursor.getString(1),
                         String.format(parent.getContext().getString(R.string.format_time_detail_album),
                                 mCursor.getInt(mCursor.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS)),
-                                mCursor.getInt(mCursor.getColumnIndex(MediaStore.Audio.Albums.FIRST_YEAR))));
+                                mCursor.getInt(mCursor.getColumnIndex(MediaStore.Audio.Albums.FIRST_YEAR))), true);
             }
         });
         return albumHolder;

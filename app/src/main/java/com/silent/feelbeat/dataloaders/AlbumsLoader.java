@@ -82,6 +82,16 @@ public class AlbumsLoader extends LoaderDB {
                 order);
     }
 
+    public CursorLoader getCursorLoader(Context context, long albumID, boolean az) {
+        String order = az ? ORDER_BY_NAME_AZ : ORDER_BY_NAME_ZA;
+        return new CursorLoader(context,
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                PROJECTION,
+                PROJECTION[0]+" = ?",
+                new String[]{albumID+""},
+                order);
+    }
+
     public ArrayList<Album> getList(String title, int limit) {
         Cursor cursor = contentResolver.query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                 PROJECTION,
@@ -115,5 +125,15 @@ public class AlbumsLoader extends LoaderDB {
                 PROJECTION[6] + " = ? AND " + PROJECTION[1] + " = ? ",
                 new String[]{"1", album+""},
                 ORDER_BY_NAME_AZ);
+    }
+
+    public CursorLoader getAlbumArtist(Context context, long artistID, boolean az){
+        String sortBy = az ? ORDER_BY_NAME_AZ : ORDER_BY_NAME_ZA;
+        return new CursorLoader(context,
+                MediaStore.Audio.Artists.Albums.getContentUri("external", artistID),
+                PROJECTION,
+                null,
+                null,
+                sortBy);
     }
 }

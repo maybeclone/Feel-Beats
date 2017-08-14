@@ -24,10 +24,11 @@ public class NavigationUtils {
         String artist = data.getStringExtra(DetailAlbumFragment.EXTRA_ARTIST);
         String title = data.getStringExtra(DetailAlbumFragment.EXTRA_TITLE);
         String info =  data.getStringExtra(DetailAlbumFragment.EXTRA_INFO);
+        boolean az = data.getBooleanExtra(SilentUtils.EXTRA_ORDER, true);
 
         if(detailAlbumFragment == null){
             // read from Preference
-            detailAlbumFragment = DetailAlbumFragment.newInstance(albumID,artist, title, info, true);
+            detailAlbumFragment = DetailAlbumFragment.newInstance(albumID,artist, title, info, az);
         } else {
             Bundle args = detailAlbumFragment.getArguments();
             args.putLong(DetailAlbumFragment.EXTRA_ALBUMID, albumID);
@@ -45,9 +46,10 @@ public class NavigationUtils {
     public static void navigationToArtist(Context context, Intent data, DetailArtistFragment detailArtistFragment){
         long artistID = data.getLongExtra(DetailArtistFragment.EXTRA_ARTIST_ID, -1);
         String title = data.getStringExtra(DetailArtistFragment.EXTRA_ARTIST);
+        boolean az = data.getBooleanExtra(SilentUtils.EXTRA_ORDER, true);
 
         if(detailArtistFragment == null){
-            detailArtistFragment = DetailArtistFragment.newInstance(artistID, title);
+            detailArtistFragment = DetailArtistFragment.newInstance(artistID, title, az);
         } else {
             Bundle args = detailArtistFragment.getArguments();
             args.putLong(DetailArtistFragment.EXTRA_ARTIST_ID, artistID);

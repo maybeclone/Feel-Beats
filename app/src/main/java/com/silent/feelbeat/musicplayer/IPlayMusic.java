@@ -23,6 +23,7 @@ public interface IPlayMusic {
 
     String EXTRA_PLAYING_POSITION = "position";
     String EXTRA_SONG = "song";
+    String EXTRA_PLAYING = "pause";
 
     void play(int position);
     int next();

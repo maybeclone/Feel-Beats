@@ -1,9 +1,7 @@
 package com.silent.feelbeat.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,13 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
-import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.silent.feelbeat.R;
-import com.silent.feelbeat.dataloaders.AlbumsLoader;
-import com.silent.feelbeat.models.Artist;
 import com.silent.feelbeat.utils.ColorUtils;
 import com.silent.feelbeat.utils.SilentUtils;
-import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -168,6 +162,12 @@ public class ArtistAdapter extends CursorAdapter {
         int i = position - sectionToOffset.get(getSectionToPosition(position)) - 1;
         cursor.moveToPosition(i);
         return cursor.getString(1);
+    }
+
+    public long getLongAlbumID(int position) {
+        int i = position - sectionToOffset.get(getSectionToPosition(position)) - 1;
+        cursor.moveToPosition(i);
+        return cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ID));
     }
 
     public int getSectionToPosition(int position) {

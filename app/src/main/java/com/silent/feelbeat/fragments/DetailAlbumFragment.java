@@ -39,7 +39,7 @@ public class DetailAlbumFragment extends Fragment implements LoaderManager.Loade
     public final static String EXTRA_ARTIST = "artist";
 
     private TextView title, info;
-    private ImageView backgound;
+    private ImageView background;
     private Toolbar toolbar;
     private ListView listView;
     private FloatingActionButton floatBtn;
@@ -90,7 +90,7 @@ public class DetailAlbumFragment extends Fragment implements LoaderManager.Loade
         title = (TextView) view.findViewById(R.id.titleTV);
         info = (TextView) view.findViewById(R.id.infoTV);
         floatBtn = (FloatingActionButton) view.findViewById(R.id.floatButton);
-        backgound = (ImageView) view.findViewById(R.id.backgroundIV);
+        background = (ImageView) view.findViewById(R.id.backgroundIV);
         toolbar = (Toolbar) view.findViewById(R.id.toolBar);
         listView = (ListView) view.findViewById(R.id.listView);
         listView.setAdapter(adapter);
@@ -104,7 +104,7 @@ public class DetailAlbumFragment extends Fragment implements LoaderManager.Loade
             info.setText(args.getString(EXTRA_INFO));
             Picasso.with(getContext())
                     .load(AlbumsLoader.getUriAlbumArt(args.getLong(EXTRA_ALBUMID)))
-                    .into(backgound);
+                    .into(background);
             toolbar.setTitle(args.getString(EXTRA_ARTIST));
 
         }
@@ -162,21 +162,23 @@ public class DetailAlbumFragment extends Fragment implements LoaderManager.Loade
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.az:
-                boolean az = getArguments().getBoolean(SilentUtils.EXTRA_ORDER);
                 boolean checked_az = item.isChecked();
-                if (checked_az != az) {
+                if (checked_az) {
                     item.setChecked(true);
                     getArguments().putBoolean(SilentUtils.EXTRA_ORDER, false);
                     getLoaderManager().initLoader(LOADER_ID, getArguments(), this);
+                } else {
+                    item.setChecked(false);
                 }
                 break;
             case R.id.za:
-                boolean _az = !getArguments().getBoolean(SilentUtils.EXTRA_ORDER);
                 boolean checked_za = item.isChecked();
-                if (checked_za != _az) {
+                if (checked_za) {
                     item.setChecked(true);
                     getArguments().putBoolean(SilentUtils.EXTRA_ORDER, true);
                     getLoaderManager().initLoader(LOADER_ID, getArguments(), this);
+                } else {
+                    item.setChecked(false);
                 }
                 break;
             case R.id.settings:

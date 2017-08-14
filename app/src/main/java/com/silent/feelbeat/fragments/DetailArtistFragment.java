@@ -51,11 +51,12 @@ public class DetailArtistFragment extends Fragment implements LoaderManager.Load
     private static final int LOADER_ID_SONG = 1;
     private static final int LOADER_ID_ALBUM = 2;
 
-    public static DetailArtistFragment newInstance(long artistID, String artist) {
+    public static DetailArtistFragment newInstance(long artistID, String artist, boolean az) {
         DetailArtistFragment detailArtistFragment = new DetailArtistFragment();
         Bundle args = new Bundle();
         args.putLong(EXTRA_ARTIST_ID, artistID);
         args.putString(EXTRA_ARTIST, artist);
+        args.putBoolean(SilentUtils.EXTRA_ORDER, az);
         detailArtistFragment.setArguments(args);
         return detailArtistFragment;
     }
@@ -117,15 +118,23 @@ public class DetailArtistFragment extends Fragment implements LoaderManager.Load
         });
         toolbar.setTitle(getArguments().getString(EXTRA_ARTIST));
         toolbar.inflateMenu(R.menu.detail_menu);
+        toolbar.setOnMenuItemClickListener(this);
+        if(getArguments().getBoolean(SilentUtils.EXTRA_ORDER)){
+            toolbar.getMenu().findItem(R.id.az).setChecked(true);
+        } else {
+            toolbar.getMenu().findItem(R.id.za).setChecked(true);
+        }
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_ID_SONG:
-                return new SongsLoader(getContext().getContentResolver()).getCursorLoader(getContext(), args.getLong(EXTRA_ARTIST_ID));
+                return new SongsLoader(getContext().getContentResolver()).getCursorLoader(getContext(),
+                        args.getLong(EXTRA_ARTIST_ID), args.getBoolean(SilentUtils.EXTRA_ORDER));
             case LOADER_ID_ALBUM:
-                return new AlbumsLoader(getContext().getContentResolver()).getCursorLoader(getContext(), args.getBoolean(SilentUtils.EXTRA_ORDER));
+                return new AlbumsLoader(getContext().getContentResolver()).getAlbumArtist(getContext(),
+                        args.getLong(EXTRA_ARTIST_ID), args.getBoolean(SilentUtils.EXTRA_ORDER));
         }
         return null;
     }
@@ -163,10 +172,26 @@ public class DetailArtistFragment extends Fragment implements LoaderManager.Load
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.az:
-
+                boolean checked_az = item.isChecked();
+                if(!checked_az){
+                    item.setChecked(true);
+                    getArguments().putBoolean(SilentUtils.EXTRA_ORDER, true);
+                    getLoaderManager().restartLoader(LOADER_ID_SONG, getArguments(), this);
+                    getLoaderManager().restartLoader(LOADER_ID_ALBUM, getArguments(), this);
+                } else {
+                    item.setChecked(false);
+                }
                 break;
             case R.id.za:
-
+                boolean checked_za = item.isChecked();
+                if(!checked_za){
+                    item.setChecked(true);
+                    getArguments().putBoolean(SilentUtils.EXTRA_ORDER, false);
+                    getLoaderManager().restartLoader(LOADER_ID_SONG, getArguments(), this);
+                    getLoaderManager().restartLoader(LOADER_ID_ALBUM, getArguments(), this);
+                } else {
+                    item.setChecked(false);
+                }
                 break;
             case R.id.settings:
 

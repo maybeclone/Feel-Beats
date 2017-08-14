@@ -31,6 +31,7 @@ import com.silent.feelbeat.models.Song;
 import com.silent.feelbeat.musicplayer.IPlayMusic;
 import com.silent.feelbeat.utils.NavigationUtils;
 import com.silent.feelbeat.utils.PermissionUtil;
+import com.silent.feelbeat.utils.SilentUtils;
 
 import java.util.ArrayList;
 
@@ -54,7 +55,10 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
             }
             if (intent.getAction().equals(IPlayMusic.RECEIVER_INFO)) {
                 Song song = intent.getParcelableExtra(IPlayMusic.EXTRA_SONG);
-                controlFragment.updateInfo(song);
+                boolean playing = intent.getBooleanExtra(IPlayMusic.EXTRA_PLAYING, true);
+                int process = intent.getIntExtra(IPlayMusic.EXTRA_PLAYING_POSITION, -1);
+                controlFragment.updateInfo(song, playing);
+                controlFragment.updateProgress(process);
             } else if (intent.getAction().equals(IPlayMusic.RECEVIER_PROCESS)) {
                 int second = intent.getIntExtra(IPlayMusic.EXTRA_PLAYING_POSITION, -1);
                 controlFragment.updateProgress(second);
@@ -167,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
     @Override
     public void playMusic(int position, ArrayList<Song> songs) {
         remoteMusic.play(this, songs, position);
-        controlFragment.setActivePlay();
+        controlFragment.setActivePlay(true);
     }
 
 
@@ -218,13 +222,14 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
     }
 
     @Override
-    public void onItemClick(long artistID, String artist) {
+    public void onItemClick(long artistID, String artist, boolean az) {
         if (detailArtistFragment == null) {
-            detailArtistFragment = DetailArtistFragment.newInstance(artistID, artist);
+            detailArtistFragment = DetailArtistFragment.newInstance(artistID, artist, az);
         } else {
             Bundle args = detailArtistFragment.getArguments();
             args.putLong(DetailArtistFragment.EXTRA_ARTIST_ID, artistID);
             args.putString(DetailArtistFragment.EXTRA_ARTIST, artist);
+            args.putBoolean(SilentUtils.EXTRA_ORDER, az);
             detailArtistFragment.setArguments(args);
         }
 
@@ -236,15 +241,16 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
     }
 
     @Override
-    public void onItemClick(long id, String artist, String title, String info) {
+    public void onItemClick(long id, String artist, String title, String info, boolean az) {
         if (detailAlbumFragment == null) {
             // read from Preference
-            detailAlbumFragment = DetailAlbumFragment.newInstance(id, artist, title, info, true);
+            detailAlbumFragment = DetailAlbumFragment.newInstance(id, artist, title, info, az);
         } else {
             Bundle args = detailAlbumFragment.getArguments();
             args.putLong(DetailAlbumFragment.EXTRA_ALBUMID, id);
             args.putString(DetailAlbumFragment.EXTRA_TITLE, title);
             args.putString(DetailAlbumFragment.EXTRA_INFO, info);
+            args.putBoolean(SilentUtils.EXTRA_ORDER, az);
             detailAlbumFragment.setArguments(args);
         }
 

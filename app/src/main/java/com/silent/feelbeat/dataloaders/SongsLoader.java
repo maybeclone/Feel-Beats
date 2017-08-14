@@ -122,13 +122,14 @@ public class SongsLoader extends LoaderDB {
         return items.size()<=limit ? items : (ArrayList<Song>) items.subList(0, limit);
     }
 
-    public CursorLoader getCursorLoader(Context context, long artistID) {
+    public CursorLoader getCursorLoader(Context context, long artistID, boolean az) {
+        String orderBy = az ? ORDER_BY_NAME_AZ : ORDER_BY_NAME_ZA;
         return new CursorLoader(context,
                 SONG_URI,
                 PROJECTION,
                 PROJECTION[6] + " = ? AND " + PROJECTION[8] + " = ? ",
                 new String[]{"1", artistID + ""},
-                ORDER_BY_NAME_AZ);
+                orderBy);
     }
 
     public CursorLoader getCursorLoaderAlbum(Context context, long albumID, boolean az) {

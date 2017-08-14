@@ -101,21 +101,21 @@ public class QuickControlFragment extends Fragment implements View.OnClickListen
         }
     }
 
-    public void updateInfo(Song song){
+    public void updateInfo(Song song, boolean playing){
         Picasso.with(getContext()).load(AlbumsLoader.getUriAlbumArt(song.albumId)).into(imageView);
         title.setText(song.title);
         artist.setText(song.artist);
         progressBar.setMax(song.getSeconds());
         progressBar.setProgress(0);
-        setActivePlay();
+        setActivePlay(playing);
     }
 
     public void updateProgress(int second){
         progressBar.setProgress(second);
     }
 
-    public void setActivePlay(){
-        play.setActivated(true);
+    public void setActivePlay(boolean playing){
+        play.setActivated(playing);
     }
 
 

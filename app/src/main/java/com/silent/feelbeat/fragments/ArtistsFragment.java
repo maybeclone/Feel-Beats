@@ -106,10 +106,9 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
         adapter.swapCursor(null);
     }
 
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        callback.onItemClick(id, adapter.getStringArtist(position));
+        callback.onItemClick(id, adapter.getStringArtist(position), getArguments().getBoolean(SilentUtils.EXTRA_ORDER));
     }
 
     public void reloadData(boolean az) {
@@ -120,10 +119,9 @@ public class ArtistsFragment extends Fragment implements LoaderManager.LoaderCal
         }
         args.putBoolean(SilentUtils.EXTRA_ORDER, az);
         getLoaderManager().restartLoader(LOADER_ID, getArguments(), this);
-
     }
 
     public interface CallbackArtistFragment {
-        void onItemClick(long artistID, String artist);
+        void onItemClick(long artistID, String artist, boolean az);
     }
 }

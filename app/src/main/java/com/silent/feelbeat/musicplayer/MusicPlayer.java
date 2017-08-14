@@ -66,7 +66,10 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
         }
         Intent intent = new Intent(RECEIVER_INFO);
         intent.putExtra(IPlayMusic.EXTRA_SONG, list.get(position));
+        intent.putExtra(IPlayMusic.EXTRA_PLAYING, play.isPlaying());
+        intent.putExtra(IPlayMusic.EXTRA_PLAYING_POSITION, play.getCurrentPosition()/1000);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+
     }
 
     public int getNowPlay() {

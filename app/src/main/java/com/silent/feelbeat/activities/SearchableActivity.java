@@ -130,6 +130,9 @@ public class SearchableActivity extends AppCompatActivity implements SearchView.
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Object object = adapter.getItem(position);
+
+        // load az from Preference
+
         if(object instanceof Song){
             RemoteMusic remote = RemoteMusic.getInstance();
             ArrayList<Song> list = new ArrayList<>();
