@@ -1,6 +1,7 @@
 package com.silent.feelbeat.adapters;
 
 import android.content.Context;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.silent.feelbeat.R;
 import com.silent.feelbeat.abstraction.Item;
+import com.silent.feelbeat.database.models.QueryHistory;
 import com.silent.feelbeat.dataloaders.AlbumsLoader;
 import com.silent.feelbeat.models.Album;
 import com.silent.feelbeat.models.Artist;
@@ -28,7 +30,8 @@ import java.util.List;
 
 public class SearchAdapter extends BaseAdapter {
 
-    private final static int TYPE_COUNT = 4;
+    private final static int TYPE_COUNT = 5;
+    private final static int HISTORY = 4;
     private final static int SONG = 1;
     private final static int ARTIST = 2;
     private final static int ALBUM = 3;
@@ -55,7 +58,7 @@ public class SearchAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         int type = getItemViewType(position);
-        if (type != HEADER) {
+        if (type != HEADER && type !=HISTORY) {
             Item item = (Item) list.get(position);
             return item.id;
         }
@@ -76,6 +79,8 @@ public class SearchAdapter extends BaseAdapter {
             return ALBUM;
         } else if (item instanceof Artist) {
             return ARTIST;
+        } else if(item instanceof QueryHistory){
+            return HISTORY;
         } else{
             return HEADER;
         }
@@ -86,6 +91,7 @@ public class SearchAdapter extends BaseAdapter {
         int type = getItemViewType(position);
         ItemHolder holder ;
         HeaderHolder headerHolder;
+        SearchHolder searchHolder;
         if (convertView == null) {
             switch (type) {
                 case HEADER:
@@ -93,6 +99,11 @@ public class SearchAdapter extends BaseAdapter {
                     headerHolder = new HeaderHolder(convertView);
                     convertView.setTag(headerHolder);
                     convertView.setOnClickListener(null);
+                    break;
+                case HISTORY:
+                    convertView = LayoutInflater.from(context).inflate(R.layout.item_search_history, parent, false);
+                    searchHolder = new SearchHolder(convertView);
+                    convertView.setTag(searchHolder);
                     break;
                 default:
                     convertView = LayoutInflater.from(context).inflate(R.layout.item_songs_list, parent, false);
@@ -132,9 +143,19 @@ public class SearchAdapter extends BaseAdapter {
                 String title = (String) list.get(position);
                 headerHolder.textView.setText(title);
                 break;
+            case HISTORY:
+                searchHolder = (SearchHolder) convertView.getTag();
+                QueryHistory query = (QueryHistory) list.get(position);
+                searchHolder.text.setText(query.text);
+                break;
         }
 
         return convertView;
+    }
+
+    public void update(List<Object> newList) {
+        this.list = newList;
+        this.notifyDataSetChanged();
     }
 
     private static class ItemHolder {
@@ -148,16 +169,19 @@ public class SearchAdapter extends BaseAdapter {
         }
     }
 
-    public void update(List<Object> newList) {
-        this.list = newList;
-        this.notifyDataSetChanged();
-    }
-
     private static class HeaderHolder {
         public TextView textView;
 
         public HeaderHolder(View view) {
             textView = (TextView) view.findViewById(R.id.text);
+        }
+    }
+
+    private static class SearchHolder{
+        public TextView text;
+
+        public SearchHolder(View view){
+            text = (TextView) view.findViewById(R.id.text);
         }
     }
 

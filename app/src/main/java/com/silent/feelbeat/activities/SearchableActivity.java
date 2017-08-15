@@ -16,7 +16,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -24,6 +26,9 @@ import android.widget.SimpleCursorAdapter;
 import com.silent.feelbeat.R;
 import com.silent.feelbeat.abstraction.Item;
 import com.silent.feelbeat.adapters.SearchAdapter;
+import com.silent.feelbeat.database.MusicDBHelper;
+import com.silent.feelbeat.database.models.QueryHistory;
+import com.silent.feelbeat.database.table.SearchHistory;
 import com.silent.feelbeat.dataloaders.AlbumsLoader;
 import com.silent.feelbeat.dataloaders.ArtistLoader;
 import com.silent.feelbeat.dataloaders.SongsLoader;
@@ -37,6 +42,7 @@ import com.silent.feelbeat.utils.NavigationUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -52,6 +58,9 @@ public class SearchableActivity extends AppCompatActivity implements SearchView.
     private SearchAdapter adapter;
     private AsyncTask searchQuery;
     private String queryString;
+    private SearchView searchView;
+    private List<Object> queryHistories;
+    private int position = 0;
 
     private final Executor mSearchExecutor = Executors.newSingleThreadExecutor();
 
@@ -64,13 +73,14 @@ public class SearchableActivity extends AppCompatActivity implements SearchView.
         toolbar = (Toolbar) findViewById(R.id.toolBar);
         LinearLayout emptySearch = (LinearLayout) findViewById(R.id.emptySearch);
         adapter = new SearchAdapter(this);
+        queryHistories = Collections.emptyList();
 
         listView.setEmptyView(emptySearch);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
         setSupportActionBar(toolbar);
-        if(getSupportActionBar()!=null){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getSupportActionBar() != null){
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back);
         }
     }
 
@@ -78,10 +88,11 @@ public class SearchableActivity extends AppCompatActivity implements SearchView.
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.searchable_menu, menu);
 
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setOnQueryTextListener(this);
+        searchView.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
 
         MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.search), new MenuItemCompat.OnActionExpandListener() {
             @Override
@@ -102,7 +113,16 @@ public class SearchableActivity extends AppCompatActivity implements SearchView.
 
     @Override
     public boolean onQueryTextSubmit(String query) {
+        addQueryHistory(query, System.currentTimeMillis());
         return false;
+    }
+
+    public void addQueryHistory(String text, long millis){
+        if(queryHistories == null){
+            queryHistories = new ArrayList<>();
+        }
+        position++;
+        queryHistories.add(0, new QueryHistory(text, millis));
     }
 
     @Override
@@ -117,14 +137,19 @@ public class SearchableActivity extends AppCompatActivity implements SearchView.
             searchQuery.cancel(true);
             searchQuery = null;
         }
+
         if(queryString.equals("")){
-            adapter.update(Collections.emptyList());
-            adapter.notifyDataSetChanged();
-        }else {
+            if(thread.getState() == Thread.State.NEW){
+                thread.start();
+            } else {
+                adapter.update(queryHistories);
+            }
+        } else {
+            listView.setAdapter(adapter);
             searchQuery = new SearchAsyncTask().executeOnExecutor(mSearchExecutor, queryString);
         }
 
-        return true;
+        return false;
     }
 
     @Override
@@ -154,7 +179,25 @@ public class SearchableActivity extends AppCompatActivity implements SearchView.
             intent.putExtra(DetailArtistFragment.EXTRA_ARTIST_ID, artist.id);
             intent.putExtra(DetailArtistFragment.EXTRA_ARTIST, artist.title);
             startActivity(intent);
+        } else if(object instanceof QueryHistory){
+            searchView.setQuery(((QueryHistory) object).text, true);
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SearchHistory.getInstance(SearchableActivity.this).insertDB(queryHistories.subList(0, position));
+            }
+        }).start();
     }
 
     private class SearchAsyncTask extends AsyncTask<String,Void, ArrayList<Object>>{
@@ -198,12 +241,24 @@ public class SearchableActivity extends AppCompatActivity implements SearchView.
             super.onPostExecute(items);
             if(items!=null) {
                 adapter.update(items);
+            } else {
+                adapter.update(Collections.emptyList());
             }
         }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
+    Thread thread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            queryHistories = SearchHistory.getInstance(SearchableActivity.this).getListHistorySearch();
+            runOnUiThread(runnable);
+        }
+    });
+
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            adapter.update(queryHistories);
+        }
+    };
 }

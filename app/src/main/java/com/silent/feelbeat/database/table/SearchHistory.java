@@ -8,55 +8,56 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.silent.feelbeat.database.MusicDBHelper;
+import com.silent.feelbeat.database.models.QueryHistory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by silent on 8/13/2017.
  */
 
-public class SearchHistory  {
+public class SearchHistory {
 
     private static final int MAX_ITEM_IN_DB = 25;
     private static SearchHistory searchHistory = null;
     private MusicDBHelper helper = null;
 
-    private SearchHistory(Context context){
+    private SearchHistory(Context context) {
         helper = MusicDBHelper.getInstance(context);
     }
 
-    public static SearchHistory getInstance(Context context){
-        if(searchHistory == null){
+    public static SearchHistory getInstance(Context context) {
+        if (searchHistory == null) {
             searchHistory = new SearchHistory(context);
         }
         return searchHistory;
     }
 
-    public void onCreate(SQLiteDatabase sqLiteDatabase){
-        String create = String.format("CREATE TABLE IF NOT EXISTS %s(%s INTEGER PRIMARY KEY, %s TEXT NOT NULL," +
-                " %s INTEGER NOT NULL)", SearchHistoryColumns.TABLE_NAME, BaseColumns._ID,
+    public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        String create = String.format("CREATE TABLE IF NOT EXISTS %s (%s INTEGER PRIMARY KEY, %s TEXT NOT NULL," +
+                        " %s INTEGER NOT NULL);", SearchHistoryColumns.TABLE_NAME, BaseColumns._ID,
                 SearchHistoryColumns.SEARCH, SearchHistoryColumns.TIME);
         sqLiteDatabase.execSQL(create);
     }
 
-    public void insertDB(Map<Long, String> searchStrings){
-        if(searchStrings == null){
+    public void insertDB(List<Object> searchStrings) {
+        if (searchStrings == null) {
             return;
         }
         SQLiteDatabase sqLiteDatabase = helper.getWritableDatabase();
         sqLiteDatabase.beginTransaction();
-        try{
-            for(Map.Entry<Long, String> entry : searchStrings.entrySet()){
+        try {
+            for (Object obj : searchStrings) {
+                QueryHistory query = (QueryHistory) obj;
                 ContentValues value = new ContentValues(2);
-                value.put(SearchHistoryColumns.SEARCH, entry.getValue());
-                value.put(SearchHistoryColumns.TIME, entry.getKey());
+                value.put(SearchHistoryColumns.SEARCH, query.text);
+                value.put(SearchHistoryColumns.TIME, query.time);
                 sqLiteDatabase.insert(SearchHistoryColumns.TABLE_NAME, null, value);
             }
             deleteOutOfMax(sqLiteDatabase);
             sqLiteDatabase.setTransactionSuccessful();
-        } catch (Exception ex){
+        } catch (Exception ex) {
             Log.e("SQLiteDatabase", ex.toString());
         } finally {
             sqLiteDatabase.endTransaction();
@@ -71,16 +72,16 @@ public class SearchHistory  {
         }
     }
 
-    public void deleteOutOfMax(SQLiteDatabase sqLiteDatabase){
+    public void deleteOutOfMax(SQLiteDatabase sqLiteDatabase) {
         Cursor cursor = sqLiteDatabase.query(SearchHistoryColumns.TABLE_NAME, new String[]{SearchHistoryColumns.TIME},
-                null, null, null, null, SearchHistoryColumns.TIME+" ASC");
+                null, null, null, null, SearchHistoryColumns.TIME + " ASC");
 
-        if(cursor != null && cursor.getCount() > MAX_ITEM_IN_DB){
-            try{
+        if (cursor != null && cursor.getCount() > MAX_ITEM_IN_DB) {
+            try {
                 int position = cursor.getCount() - MAX_ITEM_IN_DB;
                 cursor.moveToPosition(position);
                 long timing = cursor.getLong(cursor.getColumnIndex(SearchHistoryColumns.TIME));
-                sqLiteDatabase.delete(SearchHistoryColumns.TABLE_NAME, SearchHistoryColumns.TIME+" < ?",
+                sqLiteDatabase.delete(SearchHistoryColumns.TABLE_NAME, SearchHistoryColumns.TIME + " < ?",
                         new String[]{String.valueOf(timing)});
             } finally {
                 cursor.close();
@@ -89,23 +90,36 @@ public class SearchHistory  {
 
     }
 
-    private Cursor queryRecentHistorySearch(int limit){
+    private Cursor queryRecentHistorySearch(int limit) {
         return helper.getReadableDatabase().query(SearchHistoryColumns.TABLE_NAME, null, null, null, null, null,
-                SearchHistoryColumns.TIME+" DESC", String.valueOf(limit));
+                SearchHistoryColumns.TIME + " DESC", String.valueOf(limit));
     }
 
-    public ArrayList<String> getListHistorySearch(){
-        ArrayList<String> list = new ArrayList<>(MAX_ITEM_IN_DB);
+    public ArrayList<Object> getListHistorySearch() {
+        ArrayList<Object> list = new ArrayList<>(MAX_ITEM_IN_DB);
         Cursor result = queryRecentHistorySearch(MAX_ITEM_IN_DB);
-        if(result!=null){
-            while(result.moveToNext()){
-                list.add(result.getString(result.getColumnIndex(SearchHistoryColumns.SEARCH)));
+        if (result != null) {
+            while (result.moveToNext()) {
+                QueryHistory query = new QueryHistory(result.getString(result.getColumnIndex(SearchHistoryColumns.SEARCH)),
+                        result.getLong(result.getColumnIndex(SearchHistoryColumns.TIME)));
+                list.add(query);
             }
             result.close();
             return list;
         }
         return null;
     }
+
+    public static void loadFakeData(SearchHistory searchHistory) {
+        ArrayList<QueryHistory> queryHistories = new ArrayList<>();
+        queryHistories.add(new QueryHistory("tr", 3023));
+        queryHistories.add(new QueryHistory("ewrq", 33213));
+        queryHistories.add(new QueryHistory("ccr", 5434));
+        queryHistories.add(new QueryHistory("uyu", 45343));
+        queryHistories.add(new QueryHistory("vbb", 21443));
+//        searchHistory.insertDB(queryHistories);
+    }
+
 
     interface SearchHistoryColumns extends BaseColumns {
 
