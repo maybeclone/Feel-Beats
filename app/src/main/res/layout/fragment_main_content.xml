@@ -23,7 +23,6 @@
             android:id="@+id/toolBar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
-
             app:layout_constraintLeft_toLeftOf="@id/appBarLayout"
             app:layout_constraintRight_toRightOf="@id/appBarLayout"
             app:layout_constraintTop_toTopOf="@id/appBarLayout">

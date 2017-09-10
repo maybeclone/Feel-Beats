@@ -3,7 +3,9 @@ package com.silent.feelbeat.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.ArrayAdapter;
 
+import com.silent.feelbeat.database.table.PlaybackHistory;
 import com.silent.feelbeat.database.table.SearchHistory;
 
 /**
@@ -32,6 +34,7 @@ public class MusicDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         SearchHistory.getInstance(context).onCreate(db);
+        PlaybackHistory.getInstance(context).onCreate(db);
     }
 
     @Override

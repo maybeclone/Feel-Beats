@@ -6,21 +6,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.silent.feelbeat.R;
 import com.silent.feelbeat.callback.CallbackControl;
 import com.silent.feelbeat.callback.CallbackService;
-import com.silent.feelbeat.musicplayer.RemoteMusic;
 import com.silent.feelbeat.fragments.AlbumsFragment;
 import com.silent.feelbeat.fragments.ArtistsFragment;
 import com.silent.feelbeat.fragments.DetailAlbumFragment;
@@ -29,6 +25,7 @@ import com.silent.feelbeat.fragments.ListFragment;
 import com.silent.feelbeat.fragments.QuickControlFragment;
 import com.silent.feelbeat.models.Song;
 import com.silent.feelbeat.musicplayer.IPlayMusic;
+import com.silent.feelbeat.musicplayer.RemoteMusic;
 import com.silent.feelbeat.utils.NavigationUtils;
 import com.silent.feelbeat.utils.PermissionUtil;
 import com.silent.feelbeat.utils.SilentUtils;
@@ -177,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
 
     @Override
     public void pause() {
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
             PermissionUtil.showExplain(this);
             return;
         }

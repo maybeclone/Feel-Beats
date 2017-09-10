@@ -9,7 +9,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.util.Log;
 
 import com.silent.feelbeat.models.Song;
 import com.silent.feelbeat.service.PlayingService;
@@ -42,29 +41,29 @@ public class RemoteMusic {
     };
 
 
-    public static RemoteMusic getInstance(){
-        if(navigation == null){
+    public static RemoteMusic getInstance() {
+        if (navigation == null) {
             navigation = new RemoteMusic();
         }
         return navigation;
     }
 
-    private RemoteMusic(){
+    private RemoteMusic() {
     }
 
 
-    public void bindService(Context context){
+    public void bindService(Context context) {
         Intent intent = new Intent(context, PlayingService.class);
         context.getApplicationContext().startService(intent);
         context.getApplicationContext().bindService(intent, connection, Context.BIND_AUTO_CREATE);
         bound = true;
     }
 
-    public void play(Context context, ArrayList<Song> list, int position){
-        if(list == null){
+    public void play(Context context, ArrayList<Song> list, int position) {
+        if (list == null) {
             return;
         }
-        if(list.equals(oldList)){
+        if (list.equals(oldList)) {
             Message message = Message.obtain(null, IPlayMusic.PLAY, position, 0);
             try {
                 messenger.send(message);
@@ -73,23 +72,23 @@ public class RemoteMusic {
             }
         } else {
             oldList = list;
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList(PlayingService.EXTRA_LIST, list);
-                Message message = Message.obtain(null, IPlayMusic.PLAY_NEW_LIST, position, 0);
-                message.setData(bundle);
-                try {
-                    messenger.send(message);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList(PlayingService.EXTRA_LIST, list);
+            Message message = Message.obtain(null, IPlayMusic.PLAY_NEW_LIST, position, 0);
+            message.setData(bundle);
+            try {
+                messenger.send(message);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public void setConnection(boolean bound){
+    public void setConnection(boolean bound) {
         this.bound = bound;
     }
 
-    public void start(){
+    public void start() {
         if (!bound) {
             return;
         }
@@ -101,8 +100,8 @@ public class RemoteMusic {
         }
     }
 
-    public void pause(){
-        if(!bound){
+    public void pause() {
+        if (!bound) {
             return;
         }
         Message message = Message.obtain(null, IPlayMusic.PAUSE, 0, 0);
@@ -113,8 +112,8 @@ public class RemoteMusic {
         }
     }
 
-    public void next(){
-        if(!bound){
+    public void next() {
+        if (!bound) {
             return;
         }
         Message message = Message.obtain(null, IPlayMusic.NEXT, 0, 0);
@@ -125,7 +124,7 @@ public class RemoteMusic {
         }
     }
 
-    public void previous(){
+    public void previous() {
         Message message = Message.obtain(null, IPlayMusic.PREVIOUS, 0, 0);
         try {
             messenger.send(message);
@@ -134,8 +133,8 @@ public class RemoteMusic {
         }
     }
 
-    public void seekTo(long position){
-        if(!bound){
+    public void seekTo(long position) {
+        if (!bound) {
             return;
         }
         Message message = Message.obtain(null, IPlayMusic.SEEK_TO, (int) position, 0);
@@ -146,15 +145,15 @@ public class RemoteMusic {
         }
     }
 
-    public void unbindService(Context context){
+    public void unbindService(Context context) {
 //        if(bound){
 //            context.unbindService(connection);
 //            bound = false;
 //        }
     }
 
-    public void updateInfo(){
-        if(!bound){
+    public void updateInfo() {
+        if (!bound) {
             return;
         }
         Message message = Message.obtain(null, IPlayMusic.UPDATE_INFO, 0, 0);
