@@ -1,6 +1,7 @@
 package com.silent.feelbeat.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -15,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.silent.feelbeat.R;
+import com.silent.feelbeat.activities.PlayingActivity;
 import com.silent.feelbeat.callback.CallbackControl;
 import com.silent.feelbeat.dataloaders.AlbumsLoader;
 import com.silent.feelbeat.models.Song;
@@ -48,7 +50,15 @@ public class QuickControlFragment extends Fragment implements View.OnClickListen
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.quick_control, container, false);
+        View view = inflater.inflate(R.layout.quick_control, container, false);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), PlayingActivity.class);
+                startActivity(intent);
+            }
+        });
+        return view;
     }
 
     @Override

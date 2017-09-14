@@ -32,6 +32,10 @@
                 android:resource="@xml/searchview_configuration"/>
         </activity>
 
+        <activity android:name=".activities.PlayingActivity">
+
+        </activity>
+
         <service android:name=".service.PlayingService"
                 android:description="@string/service_description"/>
     </application>

@@ -29,4 +29,7 @@
     <string name="title_negative_btn">Ignore</string>
     <string name="title_positive_btn">Accept</string>
     <string name="explaining_read_permission">The application needs some permission to normal work</string>
+
+    <!--activity now playing-->
+    <string name="title_now_playing">Now Playing</string>
 </resources>

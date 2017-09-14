@@ -55,6 +55,9 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
         this.list = list;
     }
 
+    public Song getSong(int position){
+        return list.get(position);
+    }
 
     public void setNowPlay(int nowPlay) {
         this.nowPlay = nowPlay;
@@ -70,6 +73,10 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
         intent.putExtra(IPlayMusic.EXTRA_PLAYING_POSITION, play.getCurrentPosition()/1000);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
+    }
+
+    public int getCurrentProcess(){
+        return play.getCurrentPosition();
     }
 
     public int getNowPlay() {

@@ -146,10 +146,10 @@ public class RemoteMusic {
     }
 
     public void unbindService(Context context) {
-//        if(bound){
-//            context.unbindService(connection);
-//            bound = false;
-//        }
+        if(bound){
+            context.unbindService(connection);
+            bound = false;
+        }
     }
 
     public void updateInfo() {

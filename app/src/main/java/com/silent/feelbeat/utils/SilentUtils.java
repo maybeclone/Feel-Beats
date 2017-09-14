@@ -17,6 +17,13 @@ public class SilentUtils {
 
     public static final String TITLE_FRAGMENT = "title";
     public final static String EXTRA_ORDER = "az";
+    public static final String EXTRA_TITLE ="title song";
+    public static final String EXTRA_ARTIST ="artist";
+    public static final String EXTRA_START ="start";
+    public static final String EXTRA_LIMIT = "limit";
+    public static final String EXTRA_SONG = "song";
+    public static final String EXTRA_POSITION = "position";
+    public static final String EXTRA_MAX_PROCESS = "max";
 
     public static String getSubString(String string){
         String temp = string.charAt(1)>='a' && string.charAt(1)<='z' ? string.substring(0, 2) : string.substring(0, 1);

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<level-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:drawable="@drawable/ic_repeat"
+        android:maxLevel="0"/>
+
+    <item
+        android:drawable="@drawable/ic_repeat_active"
+        android:maxLevel="1"/>
+
+    <item
+        android:drawable="@drawable/ic_repeat_one_active"
+        android:maxLevel="2"/>
+
+    <item
+        android:drawable="@drawable/ic_repeat_active"
+        android:maxLevel="3"/>
+
+
+</level-list>

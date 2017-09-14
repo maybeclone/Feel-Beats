@@ -121,7 +121,6 @@ public class ListFragment extends Fragment implements Toolbar.OnMenuItemClickLis
                 break;
             case R.id.settings:
                 Log.d("Menu Item", "Settings");
-
                 break;
         }
         return true;

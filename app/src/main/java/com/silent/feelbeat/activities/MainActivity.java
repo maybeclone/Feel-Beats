@@ -2,11 +2,15 @@ package com.silent.feelbeat.activities;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Messenger;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -42,6 +46,22 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
     private ListFragment listFragment;
     private RemoteMusic remoteMusic;
     private boolean needUpdate = false;
+    private boolean bound = false;
+
+    private Messenger messenger;
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            messenger = new Messenger(service);
+            bound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            bound = false;
+        }
+    };
+
 
     // Broadcast Receiver
     BroadcastReceiver receiver = new BroadcastReceiver() {
