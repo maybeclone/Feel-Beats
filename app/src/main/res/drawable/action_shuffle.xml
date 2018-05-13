@@ -5,6 +5,7 @@
         android:drawable="@drawable/ic_shuffle"
         android:state_active="false"/>
     <item
-        android:drawable="@drawable/ic_shuffle_active"/>
+        android:drawable="@drawable/ic_shuffle_active"
+        android:state_activated="true"/>
 
 </selector>
