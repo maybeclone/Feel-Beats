@@ -1,5 +1,6 @@
 package com.silent.feelbeat.service;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,11 +11,14 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.silent.feelbeat.configs.Config;
 import com.silent.feelbeat.models.Song;
 import com.silent.feelbeat.musicplayer.IPlayMusic;
 import com.silent.feelbeat.musicplayer.MusicPlayer;
+import com.silent.feelbeat.utils.NotificationUtils;
 
 import java.util.List;
 
@@ -68,8 +72,10 @@ public class PlayingService extends Service {
                     break;
                 case IPlayMusic.PAUSE:
                     musicPlayer.pause();
+                    stopForeground(false);
                     break;
                 case IPlayMusic.START:
+                    startForeground(Config.ID_NOTIFICATION_FOREGROUND, NotificationUtils.getNotificationForegroundService(PlayingService.this));
                     musicPlayer.start();
                     break;
                 case IPlayMusic.NEXT:
@@ -82,6 +88,7 @@ public class PlayingService extends Service {
                     musicPlayer.seekTo(msg.arg1);
                     break;
                 case IPlayMusic.PLAY_NEW_LIST:
+                    startForeground(Config.ID_NOTIFICATION_FOREGROUND, NotificationUtils.getNotificationForegroundService(PlayingService.this));
                     Bundle bundle = msg.getData();
                     musicPlayer.setList(bundle.<Song>getParcelableArrayList(EXTRA_LIST));
                     musicPlayer.play(msg.arg1);

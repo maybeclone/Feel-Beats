@@ -37,12 +37,12 @@ public class PlaybackHistory {
     }
 
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String createPlayback = String.format("CREATE TABLE IF NOT EXIST %s " +
+        String createPlayback = String.format("CREATE TABLE IF NOT EXISTS %s " +
                         "(%s INTEGER PRIMARY KEY, %s TEXT NOT NULL, %s TEXT NOT NULL," +
                         "%s INTEGER NOT NULL, %s INTEGER NOT NULL);",
                 PlaybackColumns.TABLE_NAME, PlaybackColumns._ID, PlaybackColumns.TITLE,
                 PlaybackColumns.ARTIST, PlaybackColumns.ALBUM_ID, PlaybackColumns.DURATION);
-        String createNowPlay = String.format("CREATE TABLE IF NOT EXIST %s " +
+        String createNowPlay = String.format("CREATE TABLE IF NOT EXISTS %s " +
                         "(%s INTEGER NOT NULL, %s INTEGER NOT NULL);", NowPlayingColumns.TABLE_NAME,
                 NowPlayingColumns.POSITION, NowPlayingColumns.PROCESS);
 

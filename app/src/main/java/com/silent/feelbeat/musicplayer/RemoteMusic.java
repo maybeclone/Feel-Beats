@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.silent.feelbeat.models.Song;
 import com.silent.feelbeat.service.PlayingService;
@@ -147,8 +148,12 @@ public class RemoteMusic {
 
     public void unbindService(Context context) {
         if(bound){
-            context.unbindService(connection);
-            bound = false;
+            try {
+                context.unbindService(connection);
+                bound = false;
+            } catch (Exception exception){
+                Log.d("Error", exception.getMessage());
+            }
         }
     }
 

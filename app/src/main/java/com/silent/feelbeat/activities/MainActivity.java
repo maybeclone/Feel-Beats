@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
     };
 
 
-    // Broadcast Receiver
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -79,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
             } else if (intent.getAction().equals(IPlayMusic.RECEVIER_PROCESS)) {
                 int second = intent.getIntExtra(IPlayMusic.EXTRA_PLAYING_POSITION, -1);
                 controlFragment.updateProgress(second);
-                Log.d("Receiver", second + "");
             }
         }
     };
@@ -89,6 +87,15 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         remoteMusic = RemoteMusic.getInstance();
+        remoteMusic.bindService(this);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(IPlayMusic.RECEIVER_INFO);
+        filter.addAction(IPlayMusic.RECEVIER_PROCESS);
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
+        if (needUpdate) {
+            needUpdate = false;
+            remoteMusic.updateInfo();
+        }
         if (PermissionUtil.checkAskPermissionRequired()) {
             if (ActivityCompat.checkSelfPermission(this, PermissionUtil.PERMISSION[0]) != PackageManager.PERMISSION_GRANTED) {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this, PermissionUtil.PERMISSION[0])) {
@@ -110,17 +117,21 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
 
     private void permissionAccepted() {
         if (getIntent() != null) {
-            if (getIntent().getAction().equals(NavigationUtils.NAVIGATION_TO_ALBUM)) {
+            if (getIntent().getAction() != null && getIntent().getAction().equals(NavigationUtils.NAVIGATION_TO_ALBUM)) {
                 NavigationUtils.navigationToAlbum(this, getIntent(), detailAlbumFragment);
                 attachQuickControl(getSupportFragmentManager());
                 needUpdate = true;
                 return;
-            } else if (getIntent().getAction().equals(NavigationUtils.NAVIGATION_TO_ARTIST)) {
+            } else if (getIntent().getAction() != null && getIntent().getAction().equals(NavigationUtils.NAVIGATION_TO_ARTIST)) {
                 NavigationUtils.navigationToArtist(this, getIntent(), detailArtistFragment);
                 attachQuickControl(getSupportFragmentManager());
                 needUpdate = true;
                 return;
-            } else {
+            } else if (getIntent().getAction().equals("Notification")){
+                attachMainContent(getSupportFragmentManager());
+                needUpdate = true;
+            }
+            else {
                 attachMainContent(getSupportFragmentManager());
             }
         }
@@ -149,20 +160,18 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
     @Override
     protected void onStart() {
         super.onStart();
-        remoteMusic.bindService(this);
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(IPlayMusic.RECEIVER_INFO);
-        filter.addAction(IPlayMusic.RECEVIER_PROCESS);
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
-        if (needUpdate) {
-            needUpdate = false;
-            remoteMusic.updateInfo();
-        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+//        remoteMusic.unbindService(this);
+//        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         remoteMusic.unbindService(this);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
     }

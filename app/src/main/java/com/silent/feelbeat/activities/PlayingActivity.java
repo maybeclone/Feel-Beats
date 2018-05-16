@@ -51,7 +51,11 @@ public class PlayingActivity extends AppCompatActivity implements CallbackContro
         listFragment = new ArrayList<>();
         if (savedInstanceState == null) {
             MusicPlayer musicPlayer = MusicPlayer.getInstance(getApplicationContext());
+            if(musicPlayer.getList().size() <= 0){
+                return;
+            }
             Song song = musicPlayer.getSong(musicPlayer.getNowPlay());
+
             String title = song.title;
             String artist = song.artist;
             String start = SilentUtils.getStringTimeFromDuration(this, musicPlayer.getCurrentProcess());
