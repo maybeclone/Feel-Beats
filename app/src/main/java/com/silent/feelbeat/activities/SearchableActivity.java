@@ -1,32 +1,24 @@
 package com.silent.feelbeat.activities;
 
-import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 
 import com.silent.feelbeat.R;
-import com.silent.feelbeat.abstraction.Item;
 import com.silent.feelbeat.adapters.SearchAdapter;
-import com.silent.feelbeat.database.MusicDBHelper;
 import com.silent.feelbeat.database.models.QueryHistory;
 import com.silent.feelbeat.database.table.SearchHistory;
 import com.silent.feelbeat.dataloaders.AlbumsLoader;
@@ -34,9 +26,9 @@ import com.silent.feelbeat.dataloaders.ArtistLoader;
 import com.silent.feelbeat.dataloaders.SongsLoader;
 import com.silent.feelbeat.fragments.DetailAlbumFragment;
 import com.silent.feelbeat.fragments.DetailArtistFragment;
-import com.silent.feelbeat.models.Album;
-import com.silent.feelbeat.models.Artist;
-import com.silent.feelbeat.models.Song;
+import com.silent.feelbeat.models.database.Album;
+import com.silent.feelbeat.models.database.Artist;
+import com.silent.feelbeat.models.database.Song;
 import com.silent.feelbeat.musicplayer.RemoteMusic;
 import com.silent.feelbeat.utils.NavigationUtils;
 

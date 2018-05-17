@@ -10,9 +10,7 @@ import android.support.v4.content.CursorLoader;
 
 import com.silent.feelbeat.abstraction.Item;
 import com.silent.feelbeat.abstraction.LoaderDB;
-import com.silent.feelbeat.models.Album;
-import com.silent.feelbeat.models.Artist;
-import com.silent.feelbeat.models.Song;
+import com.silent.feelbeat.models.database.Album;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,6 @@
 package com.silent.feelbeat.adapters;
 
 import android.content.Context;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +13,9 @@ import com.silent.feelbeat.R;
 import com.silent.feelbeat.abstraction.Item;
 import com.silent.feelbeat.database.models.QueryHistory;
 import com.silent.feelbeat.dataloaders.AlbumsLoader;
-import com.silent.feelbeat.models.Album;
-import com.silent.feelbeat.models.Artist;
-import com.silent.feelbeat.models.Song;
+import com.silent.feelbeat.models.database.Album;
+import com.silent.feelbeat.models.database.Artist;
+import com.silent.feelbeat.models.database.Song;
 import com.silent.feelbeat.utils.ColorUtils;
 import com.silent.feelbeat.utils.SilentUtils;
 import com.squareup.picasso.Picasso;

@@ -3,7 +3,6 @@ package com.silent.feelbeat.fragments;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
-import com.silent.feelbeat.models.Playlist;
 import com.silent.feelbeat.utils.SilentUtils;
 
 /**

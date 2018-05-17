@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:checkableBehavior="none">
+
+        <item
+            android:id="@+id/profileNav"
+            android:icon="@drawable/ic_account"
+            android:title="Profile"/>
+
+        <item
+            android:id="@+id/passwordNav"
+            android:icon="@drawable/ic_account"
+            android:title="Change Password"/>
+
+    </group>
+
+    <group
+        android:checkableBehavior="none">
+
+        <item
+            android:id="@+id/logoutNav"
+            android:icon="@drawable/ic_logout"
+            android:title="Logout"/>
+
+    </group>
+
+</menu>

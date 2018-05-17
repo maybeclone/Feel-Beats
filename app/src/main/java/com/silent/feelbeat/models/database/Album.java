@@ -1,4 +1,4 @@
-package com.silent.feelbeat.models;
+package com.silent.feelbeat.models.database;
 
 import com.silent.feelbeat.abstraction.Item;
 

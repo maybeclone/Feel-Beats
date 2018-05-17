@@ -19,7 +19,7 @@ import com.silent.feelbeat.R;
 import com.silent.feelbeat.activities.PlayingActivity;
 import com.silent.feelbeat.callback.CallbackControl;
 import com.silent.feelbeat.dataloaders.AlbumsLoader;
-import com.silent.feelbeat.models.Song;
+import com.silent.feelbeat.models.database.Song;
 import com.squareup.picasso.Picasso;
 
 /**

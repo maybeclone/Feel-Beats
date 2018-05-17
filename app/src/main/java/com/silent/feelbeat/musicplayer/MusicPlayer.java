@@ -7,14 +7,12 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.silent.feelbeat.dataloaders.SongsLoader;
-import com.silent.feelbeat.models.Song;
+import com.silent.feelbeat.models.database.Song;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by silent on 7/23/2017.

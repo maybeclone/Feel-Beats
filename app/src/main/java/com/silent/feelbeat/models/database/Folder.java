@@ -1,4 +1,4 @@
-package com.silent.feelbeat.models;
+package com.silent.feelbeat.models.database;
 
 /**
  * Created by silent on 6/29/2017.

@@ -10,4 +10,5 @@
     <color name="colorGrayWhite">#FFDFDCE4</color>
     <color name="colorToolbar">#38bbb6c5</color>
     <color name="colorTitle">#AA000000</color>
+    <color name="colorShapeButtonLogin">#FF2C3445</color>
 </resources>

@@ -1,4 +1,4 @@
-package com.silent.feelbeat.models;
+package com.silent.feelbeat.models.database;
 
 import android.os.Parcel;
 import android.os.Parcelable;

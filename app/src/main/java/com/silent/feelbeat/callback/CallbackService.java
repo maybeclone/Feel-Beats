@@ -1,8 +1,6 @@
 package com.silent.feelbeat.callback;
 
-import android.database.Cursor;
-
-import com.silent.feelbeat.models.Song;
+import com.silent.feelbeat.models.database.Song;
 
 import java.util.ArrayList;
 

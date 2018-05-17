@@ -2,12 +2,10 @@ package com.silent.feelbeat.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.provider.MediaStore;
 import android.support.v7.graphics.Palette;
-import android.support.v7.graphics.Target;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,10 +18,7 @@ import com.silent.feelbeat.R;
 import com.silent.feelbeat.abstraction.RecyclerViewCursor;
 import com.silent.feelbeat.dataloaders.AlbumsLoader;
 import com.silent.feelbeat.fragments.AlbumsFragment;
-import com.silent.feelbeat.models.Album;
 import com.silent.feelbeat.utils.ColorUtils;
-import com.silent.feelbeat.utils.SilentUtils;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 /**

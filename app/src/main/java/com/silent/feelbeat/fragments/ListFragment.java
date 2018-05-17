@@ -1,34 +1,22 @@
 package com.silent.feelbeat.fragments;
 
-import android.annotation.TargetApi;
-import android.app.Activity;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.silent.feelbeat.R;
-import com.silent.feelbeat.activities.MainActivity;
 import com.silent.feelbeat.activities.SearchableActivity;
 import com.silent.feelbeat.adapters.TabAdapter;
-import com.silent.feelbeat.callback.CallbackControl;
-import com.silent.feelbeat.models.Artist;
 
 import java.util.ArrayList;
 import java.util.List;

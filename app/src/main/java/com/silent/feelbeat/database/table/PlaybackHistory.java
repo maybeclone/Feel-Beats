@@ -8,7 +8,7 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.silent.feelbeat.database.MusicDBHelper;
-import com.silent.feelbeat.models.Song;
+import com.silent.feelbeat.models.database.Song;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

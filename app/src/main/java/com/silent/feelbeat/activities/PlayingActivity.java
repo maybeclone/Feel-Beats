@@ -14,7 +14,7 @@ import com.silent.feelbeat.adapters.TabAdapter;
 import com.silent.feelbeat.callback.CallbackControl;
 import com.silent.feelbeat.fragments.ListPlayingFragment;
 import com.silent.feelbeat.fragments.NowPlayingFragment;
-import com.silent.feelbeat.models.Song;
+import com.silent.feelbeat.models.database.Song;
 import com.silent.feelbeat.musicplayer.MusicPlayer;
 import com.silent.feelbeat.musicplayer.RemoteMusic;
 import com.silent.feelbeat.utils.SilentUtils;

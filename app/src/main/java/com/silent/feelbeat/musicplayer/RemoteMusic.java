@@ -11,7 +11,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.silent.feelbeat.models.Song;
+import com.silent.feelbeat.models.database.Song;
 import com.silent.feelbeat.service.PlayingService;
 
 import java.util.ArrayList;

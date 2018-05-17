@@ -16,7 +16,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.silent.feelbeat.R;
 import com.silent.feelbeat.callback.CallbackControl;
@@ -27,7 +26,7 @@ import com.silent.feelbeat.fragments.DetailAlbumFragment;
 import com.silent.feelbeat.fragments.DetailArtistFragment;
 import com.silent.feelbeat.fragments.ListFragment;
 import com.silent.feelbeat.fragments.QuickControlFragment;
-import com.silent.feelbeat.models.Song;
+import com.silent.feelbeat.models.database.Song;
 import com.silent.feelbeat.musicplayer.IPlayMusic;
 import com.silent.feelbeat.musicplayer.RemoteMusic;
 import com.silent.feelbeat.utils.NavigationUtils;
@@ -127,11 +126,7 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
                 attachQuickControl(getSupportFragmentManager());
                 needUpdate = true;
                 return;
-            } else if (getIntent().getAction().equals("Notification")){
-                attachMainContent(getSupportFragmentManager());
-                needUpdate = true;
-            }
-            else {
+            } else {
                 attachMainContent(getSupportFragmentManager());
             }
         }
