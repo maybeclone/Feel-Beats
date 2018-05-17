@@ -1,25 +1,15 @@
 package com.silent.feelbeat.servers.account;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.silent.feelbeat.Instance;
-import com.silent.feelbeat.activities.LoginActivity;
-import com.silent.feelbeat.activities.MainActivity;
 import com.silent.feelbeat.configs.ConfigServer;
-import com.silent.feelbeat.models.account.User;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -28,26 +18,24 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.net.ssl.HttpsURLConnection;
+
 /**
  * Created by silent on 5/13/2018.
  */
-public class LoginPostUserAsyncTask extends AsyncTask<String, Void, User> {
+public class ChangePasswordPostAsyncTask extends AsyncTask<String, Void, Integer> {
 
     private Context context;
     private ProgressDialog progressDialog;
     private Map<String, String> arguments;
-    private User user;
 
-    public LoginPostUserAsyncTask(Context context, User user) {
+    public ChangePasswordPostAsyncTask(Context context, String oldPassword, String newPassword) {
         this.context = context;
         this.progressDialog = new ProgressDialog(context);
-        progressDialog.setCancelable(false);
-        this.user = user;
-        progressDialog.setMessage("Wait a minute...");
+        progressDialog.setMessage("Change the password...");
         this.arguments = new HashMap<>();
-        this.arguments.put(ConfigServer.ARGU_USERNAME_LOGIN, user.email);
-        this.arguments.put(ConfigServer.ARGU_PASSWORD_LOGIN, user.password);
-        this.arguments.put(ConfigServer.ARGU_GRANT_TYPE_LOGIN, "password");
+        this.arguments.put(ConfigServer.ARGU_OLD_PASSWORD_PASS, oldPassword);
+        this.arguments.put(ConfigServer.ARGU_NEW_PASSWORD, newPassword);
     }
 
     @Override
@@ -57,14 +45,14 @@ public class LoginPostUserAsyncTask extends AsyncTask<String, Void, User> {
     }
 
     @Override
-    protected User doInBackground(String... strings) {
+    protected Integer doInBackground(String... strings) {
         URL url;
         HttpURLConnection httpURLConnection = null;
 
         try {
             url = new URL(strings[0]);
-            Log.d("TRUNG", strings[0]);
             httpURLConnection = (HttpURLConnection) url.openConnection();
+
             httpURLConnection.setRequestMethod("POST");
             httpURLConnection.setDoOutput(true);
             httpURLConnection.setDoInput(true);
@@ -76,48 +64,30 @@ public class LoginPostUserAsyncTask extends AsyncTask<String, Void, User> {
             byte[] out = sj.toString().getBytes();
 
             httpURLConnection.setFixedLengthStreamingMode(out.length);
+            httpURLConnection.setRequestProperty("Authorization", "bearer "+ Instance.nowUser.accessToken);
             httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
             httpURLConnection.connect();
             OutputStream os = httpURLConnection.getOutputStream();
             os.write(out);
-            if(httpURLConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                InputStream is = httpURLConnection.getInputStream();
-                InputStreamReader reader = new InputStreamReader(is);
-                BufferedReader bufferedReader = new BufferedReader(reader);
-                String json = "";
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    json += line;
-                }
-                user.accessToken = parseJsonUserGetAccessToken(json);
-                return user;
-            }
-            return null;
+
+            return httpURLConnection.getResponseCode();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
             e.printStackTrace();
         } finally {
             if (httpURLConnection != null) {
                 httpURLConnection.disconnect();
             }
         }
-        return null;
-    }
-
-    private String parseJsonUserGetAccessToken(String json) throws JSONException {
-        JSONObject jsonObject = new JSONObject(json);
-        return jsonObject.getString("access_token");
+        return HttpsURLConnection.HTTP_INTERNAL_ERROR;
     }
 
     @Override
-    protected void onPostExecute(User user) {
+    protected void onPostExecute(Integer stt) {
         progressDialog.dismiss();
-        if(user != null){
-            Instance.nowUser = user;
-            new ProfileGetAsyncTask(context).execute(ConfigServer.PROFILE_URL);
+        if(stt == HttpURLConnection.HTTP_OK){
+            Toast.makeText(context, "Change the password success", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(context, "There are some errors", Toast.LENGTH_SHORT).show();
         }

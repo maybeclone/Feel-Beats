@@ -6,15 +6,6 @@
     android:fitsSystemWindows="true"
     tools:context="com.silent.feelbeat.activities.MainActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolBar"
-        android:layout_gravity="top"
-        android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize"
-        android:background="@color/colorPrimary">
-
-    </android.support.v7.widget.Toolbar>
-
     <FrameLayout
         android:id="@+id/fragmentMainContent"
         android:layout_width="match_parent"

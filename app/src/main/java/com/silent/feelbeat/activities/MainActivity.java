@@ -45,22 +45,6 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
     private ListFragment listFragment;
     private RemoteMusic remoteMusic;
     private boolean needUpdate = false;
-    private boolean bound = false;
-
-    private Messenger messenger;
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            messenger = new Messenger(service);
-            bound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            bound = false;
-        }
-    };
-
 
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override

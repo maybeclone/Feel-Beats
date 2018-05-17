@@ -86,6 +86,8 @@ public class ProfileGetAsyncTask extends AsyncTask<String, Void, User> {
     protected void onPostExecute(User user) {
         progressDialog.dismiss();
         if(user != null) {
+            Instance.nowUser.email = user.email;
+
             Instance.nowUser.name = user.name;
             Instance.nowUser.birthday = user.birthday;
             Instance.nowUser.gender = user.gender;

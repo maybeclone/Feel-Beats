@@ -15,6 +15,8 @@ public class ConfigServer {
     public static final String LOGIN_URL = ACCOUNT_URL + "login";
     public static final String REGISTER_URL = ACCOUNT_URL + "register";
     public static final String PROFILE_URL = ACCOUNT_URL + "me";
+    public static final String LOGOUT_URL = ACCOUNT_URL  + "logout";
+    public static final String CHANGE_PASSWORD_URL = ACCOUNT_URL + "changepassword";
 
     public static final String ARGU_USERNAME_LOGIN = "username";
     public static final String ARGU_PASSWORD_LOGIN = "password";
@@ -25,5 +27,10 @@ public class ConfigServer {
     public static final String ARGU_NAME_REGISTER = "Name";
     public static final String ARGU_BIRTHDAY_REGISTER = "Birthday";
     public static final String ARGU_GENDER_REGISTER = "Gender";
+
+
+    public static final String ARGU_OLD_PASSWORD_PASS = "OldPassword";
+    public static final String ARGU_NEW_PASSWORD = "NewPassword";
+
 
 }

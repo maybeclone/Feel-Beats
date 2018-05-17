@@ -44,7 +44,8 @@
             android:layout_height="wrap_content"
             android:hint="EMAIL"
             android:inputType="textEmailAddress"
-            android:layout_marginBottom="20dp"/>
+            android:layout_marginBottom="20dp"
+            android:text="thanhtrung@gmail.com"/>
 
         <EditText
             android:id="@+id/passwordEditText"
@@ -52,7 +53,8 @@
             android:layout_height="wrap_content"
             android:hint="PASSWORD"
             android:inputType="textPassword"
-            android:layout_marginBottom="30dp"/>
+            android:layout_marginBottom="30dp"
+            android:text="123456789"/>
 
         <Button
             android:id="@+id/loginButton"
