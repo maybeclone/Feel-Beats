@@ -1,9 +1,12 @@
 package com.silent.feelbeat.models.database;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.silent.feelbeat.abstraction.Item;
+
+import java.util.Date;
 
 /**
  * Created by silent on 6/29/2017.
@@ -17,6 +20,12 @@ public class Song extends Item implements Parcelable{
     public String artistID;
     public String composer;
     public int duration;
+
+    public Date dateCreated;
+    public float rating;
+    public String link;
+    public String linkImage;
+    public String musicKind;
 
     public Song(){
         super();

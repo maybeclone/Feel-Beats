@@ -35,7 +35,7 @@ public class AlbumsListAtrtistAdapter extends RecyclerViewCursor<AlbumsListAtrti
 
     @Override
     public void onBindViewHolder(ViewHolder holder, Cursor cursor) {
-        Picasso.with(mContext).load(AlbumsLoader.getUriAlbumArt(cursor.getLong(0))).into(holder.img);
+        Picasso.get().load(AlbumsLoader.getUriAlbumArt(cursor.getLong(0))).into(holder.img);
         holder.title.setText(cursor.getString(1));
         holder.numOfSongs.setText(String.format(mContext.getString(R.string.format_num_of_song),
                 cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.AlbumColumns.NUMBER_OF_SONGS))));

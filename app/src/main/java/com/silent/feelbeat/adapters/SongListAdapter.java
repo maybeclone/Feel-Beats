@@ -144,7 +144,7 @@ public class SongListAdapter extends CursorAdapter {
                 songHolder.titleText.setText(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
                 songHolder.artistText.setText(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
                 // set image
-                Picasso.with(convertView.getContext())
+                Picasso.get()
                         .load(AlbumsLoader.getUriAlbumArt(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID))))
                         .placeholder(R.mipmap.ic_launcher)
                         .into(songHolder.avaImage);

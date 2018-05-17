@@ -117,7 +117,7 @@ public class SearchAdapter extends BaseAdapter {
                 Song song = (Song) list.get(position);
                 holder.title.setText(song.title);
                 holder.info.setText(song.artist);
-                Picasso.with(context).load(AlbumsLoader.getUriAlbumArt(song.albumId)).into(holder.imageView);
+                Picasso.get().load(AlbumsLoader.getUriAlbumArt(song.albumId)).into(holder.imageView);
                 break;
             case ARTIST:
                 holder = (ItemHolder) convertView.getTag();
@@ -135,7 +135,7 @@ public class SearchAdapter extends BaseAdapter {
                 holder.title.setText(album.title);
                 holder.info.setText(String.format(context.getString(R.string.format_time_detail_album),
                         album.numOfSongs, album.year));
-                Picasso.with(context).load(AlbumsLoader.getUriAlbumArt(album.id)).into(holder.imageView);
+                Picasso.get().load(AlbumsLoader.getUriAlbumArt(album.id)).into(holder.imageView);
                 break;
             case HEADER:
                 headerHolder = (HeaderHolder) convertView.getTag();

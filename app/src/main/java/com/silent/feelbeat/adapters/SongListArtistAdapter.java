@@ -35,7 +35,7 @@ public class SongListArtistAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
-        Picasso.with(context).load(AlbumsLoader.getUriAlbumArt(cursor.getLong(7))).into(viewHolder.art);
+        Picasso.get().load(AlbumsLoader.getUriAlbumArt(cursor.getLong(7))).into(viewHolder.art);
         viewHolder.titleText.setText(cursor.getString(1));
         viewHolder.albumText.setText(cursor.getString(5));
     }

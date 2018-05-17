@@ -87,7 +87,13 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
             return;
         }
         play.reset();
-        Uri uri = SongsLoader.getSongUri(list.get(position).id);
+        Song playSong = list.get(position);
+        Uri uri = null;
+        if (playSong.link != null){
+            uri = Uri.parse(playSong.link);
+        } else {
+            uri = SongsLoader.getSongUri(list.get(position).id);
+        }
         try {
             setNowPlay(position);
             play.setDataSource(context, uri);

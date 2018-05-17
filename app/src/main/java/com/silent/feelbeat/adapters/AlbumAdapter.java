@@ -84,7 +84,7 @@ public class AlbumAdapter extends RecyclerViewCursor<AlbumAdapter.AlbumHolder> {
             }
 
             @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
+            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
 
             }
 
@@ -97,7 +97,7 @@ public class AlbumAdapter extends RecyclerViewCursor<AlbumAdapter.AlbumHolder> {
         /*Target in Picasso is weak preference so setTag method will help us has strong preference */
         holder.albumArt.setTag(target);
 
-        Picasso.with(holder.albumArt.getContext())
+        Picasso.get()
                 .load(AlbumsLoader.getUriAlbumArt(cursor.getLong(0)))
                 .placeholder(R.mipmap.ic_launcher)
                 .error(R.mipmap.ic_launcher)

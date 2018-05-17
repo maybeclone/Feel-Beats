@@ -57,6 +57,7 @@ public class ListFragment extends Fragment implements Toolbar.OnMenuItemClickLis
         if(savedInstanceState==null) {
             list.add(ArtistsFragment.newInstance("Artists", true));
             list.add(SongsFragment.newInstance("Songs", true));
+            list.add(HomeFragment.newInstance("Home"));
             list.add(AlbumsFragment.newInstance("Albums", true));
             list.add(PlaylistFragment.newInstance("Playlist"));
         }
@@ -84,7 +85,7 @@ public class ListFragment extends Fragment implements Toolbar.OnMenuItemClickLis
         tabLayout.setupWithViewPager(viewPager);
 
         viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(1);
+        viewPager.setCurrentItem(2);
 
         navView.setSelected(true);
 

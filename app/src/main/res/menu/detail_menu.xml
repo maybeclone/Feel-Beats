@@ -5,7 +5,7 @@
     <item
         android:id="@+id/menu"
         android:title="@string/item_menu_overflow"
-        android:icon="@drawable/ic_menu_nav"
+        android:icon="@drawable/ic_menu"
         app:showAsAction="always">
         <menu>
             <item

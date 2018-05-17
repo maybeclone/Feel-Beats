@@ -102,7 +102,7 @@ public class DetailAlbumFragment extends Fragment implements LoaderManager.Loade
         if (args != null) {
             title.setText(args.getString(EXTRA_TITLE));
             info.setText(args.getString(EXTRA_INFO));
-            Picasso.with(getContext())
+            Picasso.get()
                     .load(AlbumsLoader.getUriAlbumArt(args.getLong(EXTRA_ALBUMID)))
                     .into(background);
             toolbar.setTitle(args.getString(EXTRA_ARTIST));

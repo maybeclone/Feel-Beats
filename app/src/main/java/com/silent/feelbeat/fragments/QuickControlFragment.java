@@ -112,7 +112,11 @@ public class QuickControlFragment extends Fragment implements View.OnClickListen
     }
 
     public void updateInfo(Song song, boolean playing){
-        Picasso.with(getContext()).load(AlbumsLoader.getUriAlbumArt(song.albumId)).into(imageView);
+        if(song.linkImage != null){
+            Picasso.get().load(song.linkImage).into(imageView);
+        } else {
+            Picasso.get().load(AlbumsLoader.getUriAlbumArt(song.albumId)).into(imageView);
+        }
         title.setText(song.title);
         artist.setText(song.artist);
         progressBar.setMax(song.getSeconds());
