@@ -1,7 +1,9 @@
 package com.silent.feelbeat.fragments;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -82,11 +84,19 @@ public class PlaylistFragment extends Fragment implements View.OnClickListener{
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 0 && resultCode == Activity.RESULT_OK){
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.addFloatingActionButton:
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                View view = getLayoutInflater().inflate(R.layout.add_playlist_dialog, null);
+                View view = getLayoutInflater().inflate(R.layout.fragment_listview, null);
                 final EditText editText = (EditText) view.findViewById(R.id.nameText);
                 builder.setView(view);
                 builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
@@ -105,6 +115,12 @@ public class PlaylistFragment extends Fragment implements View.OnClickListener{
                 builder.show();
                 break;
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        adapter.notifyDataSetChanged();
     }
 
     class PlaylistGetAsyncTask extends AsyncTask<String, Void, List<Playlist>> {
@@ -134,8 +150,6 @@ public class PlaylistFragment extends Fragment implements View.OnClickListener{
                 httpURLConnection.setRequestProperty("Authorization", "bearer "+ Instance.nowUser.accessToken);
                 httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
                 buffer = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
-                Log.d("TRUNG", httpURLConnection.getResponseCode()+"");
-                Log.d("TRUNG", httpURLConnection.getResponseMessage());
                 while ((input = buffer.readLine()) != null){
                     jsonBuilder.append(input);
                 }

@@ -57,7 +57,6 @@ public class HomeFragment extends Fragment implements CallbackService{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         songAdapter = new SongServerAdapter(getContext());
-        new SongsGetAsyncTask().execute(ConfigServer.GET_SONGS_URL);
     }
 
     @Nullable
@@ -75,6 +74,8 @@ public class HomeFragment extends Fragment implements CallbackService{
 
         bannerRecyclerView.setAdapter(new BannerAdapter());
         songsRecyclerView.setAdapter(songAdapter);
+
+        new SongsGetAsyncTask().execute(ConfigServer.GET_SONGS_URL);
 
     }
 
@@ -174,5 +175,6 @@ public class HomeFragment extends Fragment implements CallbackService{
                 Toast.makeText(getContext(), "There are some errors", Toast.LENGTH_SHORT).show();
             }
         }
+
     }
 }

@@ -56,8 +56,6 @@ public class PlaylistGetAsyncTask extends AsyncTask<String, Void, List<Playlist>
             httpURLConnection.setRequestProperty("Authorization", "bearer "+ Instance.nowUser.accessToken);
             httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
             buffer = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
-            Log.d("TRUNG", httpURLConnection.getResponseCode()+"");
-            Log.d("TRUNG", httpURLConnection.getResponseMessage());
             while ((input = buffer.readLine()) != null){
                 jsonBuilder.append(input);
             }
@@ -98,6 +96,7 @@ public class PlaylistGetAsyncTask extends AsyncTask<String, Void, List<Playlist>
     }
 
     private ArrayList<Song> parserSongList(JSONArray jsonArray) throws JSONException {
+
         ArrayList<Song> songList = new ArrayList<>();
         Song song;
         int id, duration;
@@ -123,6 +122,7 @@ public class PlaylistGetAsyncTask extends AsyncTask<String, Void, List<Playlist>
             song.composer = artist;
             song.musicKind = musicKind;
             songList.add(song);
+            Log.d("TRUNG", song.linkImage+"");
         }
         return songList;
     }

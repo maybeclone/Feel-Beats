@@ -3,6 +3,7 @@ package com.silent.feelbeat.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.silent.feelbeat.R;
+import com.silent.feelbeat.activities.DetailPlaylistActivity;
 import com.silent.feelbeat.configs.ConfigServer;
 import com.silent.feelbeat.models.Playlist;
 import com.silent.feelbeat.servers.playlist.PlaylistDeleteAsyncTask;
@@ -69,7 +71,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Playli
         notifyDataSetChanged();
     }
 
-    class PlaylistHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener{
+    class PlaylistHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener, View.OnClickListener{
 
         TextView nameText;
         TextView countSongsText;
@@ -81,6 +83,7 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Playli
             nameText = (TextView) itemView.findViewById(R.id.nameText);
             countSongsText = (TextView) itemView.findViewById(R.id.countSongsText);
             itemView.setOnCreateContextMenuListener(this);
+            itemView.setOnClickListener(this);
         }
 
         public void bindData(Playlist playlist){
@@ -134,7 +137,14 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Playli
             }
         };
 
-
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(context, DetailPlaylistActivity.class);
+            intent.putExtra("title", playlistList.get(getAdapterPosition()).name);
+            intent.putExtra("list", playlistList.get(getAdapterPosition()).songArrayList);
+            intent.putExtra("position", getAdapterPosition());
+            ((Activity) context).startActivityForResult(intent, 0);
+        }
     }
 
 }

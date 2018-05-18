@@ -21,6 +21,7 @@ public class ConfigServer {
     public static final String POST_RATING_URL = BASE_URL + "rating";
     public static final String GET_LISTENING_URL = GET_SONGS_URL + "/listening";
     public static final String PLAYLIST_URL = BASE_URL + "playlist";
+    public static final String SONG_PLAYLIST_URL = PLAYLIST_URL + "/" + "song";
 
     public static final String ARGU_USERNAME_LOGIN = "username";
     public static final String ARGU_PASSWORD_LOGIN = "password";
@@ -43,5 +44,9 @@ public class ConfigServer {
     public static final String ARGU_ID_PLAYLIST = "Id";
     public static final String ARGU_NAME_PLAYLIST = "Name";
     public static final String ARGU_DATE_CREATED_PLAYLIST = "DateCreated";
+
+    public static final String ARGU_SONG_ID_REMOVE = "SongId";
+    public static final String ARGU_PLAYLIST_ID_REMOVE = "PlaylistId";
+    public static final String ARGU_DATE_CREATE_REMOVE = "DateCreated";
 
 }

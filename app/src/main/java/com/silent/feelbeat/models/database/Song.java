@@ -70,6 +70,12 @@ public class Song extends Item implements Parcelable{
         artist = in.readString();
         composer = in.readString();
         duration = in.readInt();
+        try{
+            link = in.readString();
+            linkImage = in.readString();
+        } catch (Exception ex){
+
+        }
     }
 
     public int getSeconds(){
@@ -107,5 +113,11 @@ public class Song extends Item implements Parcelable{
         dest.writeString(artist);
         dest.writeString(composer);
         dest.writeInt(duration);
+        try {
+            dest.writeString(link);
+            dest.writeString(linkImage);
+        } catch (Exception ex){
+
+        }
     }
 }

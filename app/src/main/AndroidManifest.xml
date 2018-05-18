@@ -43,7 +43,8 @@
 
         <activity android:name=".activities.MainActivity" />
         <activity android:name=".activities.RegisterActivity" />
-        <activity android:name=".activities.ChangePasswordActivity"></activity>
+        <activity android:name=".activities.ChangePasswordActivity" />
+        <activity android:name=".activities.DetailPlaylistActivity"></activity>
     </application>
 
 </manifest>
