@@ -18,6 +18,8 @@ public class ConfigServer {
     public static final String LOGOUT_URL = ACCOUNT_URL  + "logout";
     public static final String CHANGE_PASSWORD_URL = ACCOUNT_URL + "changepassword";
     public static final String GET_SONGS_URL = BASE_URL + "song";
+    public static final String POST_RATING_URL = BASE_URL + "rating";
+    public static final String GET_LISTENING_URL = GET_SONGS_URL + "/listening";
 
     public static final String ARGU_USERNAME_LOGIN = "username";
     public static final String ARGU_PASSWORD_LOGIN = "password";
@@ -32,5 +34,9 @@ public class ConfigServer {
 
     public static final String ARGU_OLD_PASSWORD_PASS = "OldPassword";
     public static final String ARGU_NEW_PASSWORD = "NewPassword";
+
+    public static final String ARGU_EMAIL_RATING = "EmailUser";
+    public static final String ARGU_SONG_ID_RATING = "SongId";
+    public static final String ARGU_RATE_RATING = "Rate";
 
 }

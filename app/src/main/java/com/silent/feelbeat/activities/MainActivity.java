@@ -70,11 +70,13 @@ public class MainActivity extends AppCompatActivity implements CallbackService, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         remoteMusic = RemoteMusic.getInstance();
+
         remoteMusic.bindService(this);
         IntentFilter filter = new IntentFilter();
         filter.addAction(IPlayMusic.RECEIVER_INFO);
         filter.addAction(IPlayMusic.RECEVIER_PROCESS);
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, filter);
+
         if (needUpdate) {
             needUpdate = false;
             remoteMusic.updateInfo();

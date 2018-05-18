@@ -10,9 +10,11 @@ import android.os.Messenger;
 import android.support.annotation.Nullable;
 
 import com.silent.feelbeat.configs.ConfigApp;
+import com.silent.feelbeat.configs.ConfigServer;
 import com.silent.feelbeat.models.database.Song;
 import com.silent.feelbeat.musicplayer.IPlayMusic;
 import com.silent.feelbeat.musicplayer.MusicPlayer;
+import com.silent.feelbeat.servers.song.ListenGetAsyncTask;
 import com.silent.feelbeat.utils.NotificationUtils;
 
 
@@ -62,6 +64,10 @@ public class PlayingService extends Service {
             switch (msg.what){
                 case IPlayMusic.PLAY:
                     musicPlayer.play(msg.arg1);
+                    Song song = musicPlayer.getSong(musicPlayer.getNowPlay());
+                    if(song.link != null) {
+                        new ListenGetAsyncTask(PlayingService.this, (int) song.id).execute(ConfigServer.GET_LISTENING_URL);
+                    }
                     break;
                 case IPlayMusic.PAUSE:
                     musicPlayer.pause();
@@ -85,6 +91,10 @@ public class PlayingService extends Service {
                     Bundle bundle = msg.getData();
                     musicPlayer.setList(bundle.<Song>getParcelableArrayList(EXTRA_LIST));
                     musicPlayer.play(msg.arg1);
+                    Song s = musicPlayer.getSong(musicPlayer.getNowPlay());
+                    if(s.link != null) {
+                        new ListenGetAsyncTask(PlayingService.this, (int) s.id).execute(ConfigServer.GET_LISTENING_URL);
+                    }
                     break;
                 case IPlayMusic.UPDATE_INFO:
                     musicPlayer.updateInfo(musicPlayer.getNowPlay());

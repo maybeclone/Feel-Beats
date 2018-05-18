@@ -183,4 +183,8 @@ public class MusicPlayer implements IPlayMusic, MediaPlayer.OnCompletionListener
         }
     };
 
+    public boolean isPlaying(){
+        return play.isPlaying();
+    }
+
 }

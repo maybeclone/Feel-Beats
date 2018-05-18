@@ -24,6 +24,7 @@ public class SilentUtils {
     public static final String EXTRA_SONG = "song";
     public static final String EXTRA_POSITION = "position";
     public static final String EXTRA_MAX_PROCESS = "max";
+    public static final String EXTRA_ALBUM_ART = "album_art";
 
     public static String getSubString(String string){
         String temp = string.charAt(1)>='a' && string.charAt(1)<='z' ? string.substring(0, 2) : string.substring(0, 1);
