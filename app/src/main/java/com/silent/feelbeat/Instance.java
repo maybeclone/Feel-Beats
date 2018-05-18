@@ -1,5 +1,6 @@
 package com.silent.feelbeat;
 
+import com.silent.feelbeat.models.Playlist;
 import com.silent.feelbeat.models.account.User;
 import com.silent.feelbeat.models.database.Song;
 
@@ -13,5 +14,6 @@ public class Instance {
 
     public static User nowUser;
     public static ArrayList<Song> songList;
+    public static List<Playlist> myPlaylits;
 
 }
